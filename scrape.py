@@ -4,12 +4,16 @@ import requests
 
 class scrape:
 
-    def __init__(self, start, end="start"):
+    # def __init__(self, start, end="start"):
+    #     if end == "start":
+    #         end = start
+    #     self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
+    #         str(start) + "&to=" + str(end)
+    def __init__(self, type, start, end="start"):
         if end == "start":
             end = start
-        self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
+        self.url = "https://www.last.fm/user/vishwarrior/library/"+ type +"?from=" + \
             str(start) + "&to=" + str(end)
-
     def getInfo(self):
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
@@ -29,5 +33,5 @@ class scrape:
         return test
 
 
-sc = scrape("2021-10-01", "2021-11-14")
+sc = scrape("artists","2021-09-01", "2021-09-30")
 print(sc.getInfo())
