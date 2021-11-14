@@ -18,8 +18,14 @@ class scrape:
         self.end = end
         self.type = type
 
+
     def __setType(self, type):
+        print(self.url)
+        print(self.type)
+        print(type)
         self.url = self.url.replace(self.type, type)
+        print(self.url)
+
 
     def __info(self):
         req = requests.get(self.url)
@@ -52,8 +58,8 @@ class scrape:
         return self.__info()
 
 
-# sc = scrape("tracks", "2021-09-01", "2021-09-30")
-sc = scrape("artists")
+sc = scrape("tracks", "2021-09-01", "2021-09-30")
+# sc = scrape("artists")
 print(sc.artistInfo())
 print(sc.albumInfo())
 print(sc.trackInfo())
