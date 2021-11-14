@@ -4,17 +4,22 @@ import requests
 
 class scrape:
 
-    def __init__(self, type, start, end="start"):
-        if end == "start":
+    def __init__(self, type, start="None", end="None"):
+        if start == "None" and end == "None":
+            self.url = "https://www.last.fm/user/vishwarrior/library/"+ type + "?date_preset=ALL"
+        elif end == "None":
             end = start
+            self.url = "https://www.last.fm/user/vishwarrior/library/" + type + "?from=" + \
+                str(start) + "&to=" + str(end)
+        else:
+            self.url = "https://www.last.fm/user/vishwarrior/library/" + type + "?from=" + \
+                str(start) + "&to=" + str(end)
         self.start = start
         self.end = end
-        self.url = "https://www.last.fm/user/vishwarrior/library/" + type + "?from=" + \
-            str(start) + "&to=" + str(end)
+        self.type = type
 
     def __setType(self, type):
-        self.url = "https://www.last.fm/user/vishwarrior/library/" + type + "?from=" + \
-            str(self.start) + "&to=" + str(self.end)
+        self.url = self.url.replace(self.type, type)
 
     def __info(self):
         req = requests.get(self.url)
@@ -26,7 +31,7 @@ class scrape:
         templist = temp[init:fini].replace("(", "").split(")")
         for i in range(1, len(templist)):
             templist[i] = templist[i][2:]
-        del templist[-1]  # check again later if necessary
+        del templist[-1]
         test = []
         for temper in templist:
             play = temper.split(" ")[-1]
@@ -47,7 +52,8 @@ class scrape:
         return self.__info()
 
 
-sc = scrape("tracks", "2021-09-01", "2021-09-30")
+# sc = scrape("tracks", "2021-09-01", "2021-09-30")
+sc = scrape("artists")
 print(sc.artistInfo())
 print(sc.albumInfo())
 print(sc.trackInfo())
