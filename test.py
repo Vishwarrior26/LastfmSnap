@@ -6,15 +6,19 @@ soup = BeautifulSoup(req.text, "html.parser")
 #print(soup)
 description = soup.find_all("meta", property="og:description")
 temp = str(description[1])
-print(type(temp))
 init =temp.find('"')+1
 fini = temp.find('"',init+1)
-print(init)
-print(fini)
-print(temp[init:fini])
-print(temp[init:fini].split(")"))
+# print(init)
+# print(fini)
+# print(temp[init:fini])
+# print(temp[init:fini].split(")"))
 print(temp[init:fini].replace("(","").split(")"))
-
+templist = temp[init:fini].replace("(","").split(")")
+for i in range(1,len(templist)):
+    templist[i] = templist[i][2:]
+print(templist)
+for temper in templist:
+    print(temper)
 # print(temp)
 # print(description[1])
 # descriptionArray = []
