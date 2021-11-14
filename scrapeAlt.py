@@ -27,6 +27,10 @@ class scrape:
             test.append([type, play])
         return test
 
+    def setTime(self, start, end):
+        self.start = start
+        self.end = end
+
     def artistInfo(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
             str(self.start) + "&to=" + str(self.end)
@@ -38,7 +42,8 @@ class scrape:
         return self.__info()
 
     def trackInfo(self):
-        self.url = "https://www.last.fm/user/vishwarrior/library/tracks?from=" + str(self.start) + "&to=" + str(self.end)
+        self.url = "https://www.last.fm/user/vishwarrior/library/tracks?from=" + \
+            str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
 
