@@ -21,17 +21,13 @@ class scrape:
         for i in range(1, len(templist)):
             templist[i] = templist[i][2:]
         del templist[-1]  # check again later if necessary
-        artists = []
-        plays = []
         test = []
         for temper in templist:
             play = temper.split(" ")[-1]
             artist = temper[:temper.find(play) - 1]
-            plays.append(play)
-            artists.append(artist)
             test.append([artist, play])
         return test
 
 
-sc = scrape("2021-11-10")
+sc = scrape("2021-10-01", "2021-11-14")
 print(sc.getInfo())
