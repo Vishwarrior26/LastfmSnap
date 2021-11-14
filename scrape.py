@@ -3,8 +3,12 @@ import requests
 
 
 class scrape:
-    def __init__(self, url):
-        self.url = url
+
+    def __init__(self, start, end="start"):
+        if end == "start":
+            end = start
+        self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
+            str(start) + "&to=" + str(end)
 
     def getInfo(self):
         req = requests.get(self.url)
@@ -27,3 +31,7 @@ class scrape:
             artists.append(artist)
             test.append([artist, play])
         return test
+
+
+sc = scrape("2021-11-10")
+print(sc.getInfo())
