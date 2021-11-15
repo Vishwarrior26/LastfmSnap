@@ -4,9 +4,12 @@ import requests
 
 class scrape:
 
-    def __init__(self, type, start, end):
+    def __init__(self, type, start, end="NONE"):
         self.start = start
-        self.end = end
+        if end == "NONE":
+            self.end = start
+        else:
+            self.end = end
         self.type = type
 
     def __info(self):
