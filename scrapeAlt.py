@@ -12,6 +12,7 @@ class scrape:
             self.end = end
         self.type = type
 
+# change to regex so that stuff like (OST) isn't considered the playcount when templist is created
     def __info(self):
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
@@ -20,6 +21,7 @@ class scrape:
         init = temp.find('"') + 1
         fini = temp.find('"', init + 1)
         templist = temp[init:fini].replace("(", "").split(")")
+        print(templist)
         for i in range(1, len(templist)):
             templist[i] = templist[i][2:]
         del templist[-1]
@@ -50,7 +52,7 @@ class scrape:
         return self.__info()
 
 
-sc = scrape("tracks", "2021-09-01", "2021-09-30")
-print(sc.artistInfo())
+sc = scrape("album", "2020-08-01", "2021-11-14")
+# print(sc.artistInfo())
 print(sc.albumInfo())
-print(sc.trackInfo())
+# print(sc.trackInfo())
