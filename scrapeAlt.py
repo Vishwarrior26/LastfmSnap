@@ -4,7 +4,7 @@ import requests
 
 class scrape:
 
-    def __init__(self, type, start, end="NONE", size = 0):
+    def __init__(self, type, start, end="NONE", size=0):
         self.start = start
         if end == "NONE":
             self.end = start
@@ -13,8 +13,7 @@ class scrape:
         self.type = type
         self.size = size
 
-# TODO change to regex so that stuff like "(OST)" isn't considered the playcount when templist is created - paranthesis needs to be the right kind. 
-# TODO Factor in size.
+# TODO change to regex so that stuff like "(OST)" isn't considered the playcount when templist is created - paranthesis needs to be the right kind.
     def __info(self):
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
@@ -32,8 +31,11 @@ class scrape:
             play = temper.split(" ")[-1]
             type = temper[:temper.find(play) - 1]
             test.append([type, play])
-        return test
-
+        if self.size == 0:
+            self.size = len(test)
+        return test[:self.size]
+    def setSize(self, size):
+        self.size = size
     def setTime(self, start, end):
         self.start = start
         self.end = end
@@ -54,7 +56,8 @@ class scrape:
         return self.__info()
 
 
-sc = scrape("album", "2020-08-01", "2021-11-14")
+# sc = scrape("album", "2020-08-01", "2021-11-14")
+sc = scrape("album", "2021-11-15", "NONE", 2)
 # print(sc.artistInfo())
 print(sc.albumInfo())
 # print(sc.trackInfo())
