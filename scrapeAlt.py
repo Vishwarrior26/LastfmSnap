@@ -22,10 +22,8 @@ class scrape:
         init = temp.find('"') + 1
         fini = temp.find('"', init + 1)
         print(temp[init:fini])
-        templist = temp[init:fini].replace("(", "").split(")")
-        templist1 = temp[init:fini].replace("(", "").split("), ")
+        templist = temp[init:fini].replace("(", "").split("), ") # swap to regex replace; find paranthesis followed by number then remove said paranthesis
         print(templist)
-        print(templist1)
         for i in range(1, len(templist)):
             templist[i] = templist[i][2:]
         del templist[-1]
