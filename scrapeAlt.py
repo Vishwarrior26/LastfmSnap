@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-
+import re
 
 class scrape:
 
@@ -21,8 +21,11 @@ class scrape:
         temp = str(description[1])
         init = temp.find('"') + 1
         fini = temp.find('"', init + 1)
+        print(temp[init:fini])
         templist = temp[init:fini].replace("(", "").split(")")
+        templist1 = temp[init:fini].replace("(", "").split("), ")
         print(templist)
+        print(templist1)
         for i in range(1, len(templist)):
             templist[i] = templist[i][2:]
         del templist[-1]
@@ -34,8 +37,10 @@ class scrape:
         if self.size == 0:
             self.size = len(test)
         return test[:self.size]
+
     def setSize(self, size):
         self.size = size
+
     def setTime(self, start, end):
         self.start = start
         self.end = end
@@ -56,8 +61,8 @@ class scrape:
         return self.__info()
 
 
-# sc = scrape("album", "2020-08-01", "2021-11-14")
-sc = scrape("album", "2021-11-15", "NONE", 2)
-# print(sc.artistInfo())
+sc = scrape("album", "2020-08-01", "2021-11-14",4)
+# sc = scrape("album", "2021-11-15", "NONE", 2)
+print(sc.artistInfo())
 print(sc.albumInfo())
 # print(sc.trackInfo())
