@@ -12,7 +12,7 @@ class scrape:
             self.end = end
         self.type = type
 
-# change to regex so that stuff like (OST) isn't considered the playcount when templist is created
+# change to regex so that stuff like "(OST)" isn't considered the playcount when templist is created - paranthesis needs to be the right kind
     def __info(self):
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
