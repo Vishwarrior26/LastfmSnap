@@ -4,15 +4,17 @@ import requests
 
 class scrape:
 
-    def __init__(self, type, start, end="NONE"):
+    def __init__(self, type, start, end="NONE", size = 0):
         self.start = start
         if end == "NONE":
             self.end = start
         else:
             self.end = end
         self.type = type
+        self.size = size
 
-# change to regex so that stuff like "(OST)" isn't considered the playcount when templist is created - paranthesis needs to be the right kind
+# TODO change to regex so that stuff like "(OST)" isn't considered the playcount when templist is created - paranthesis needs to be the right kind. 
+# TODO Factor in size.
     def __info(self):
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
