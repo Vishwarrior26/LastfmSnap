@@ -64,15 +64,16 @@ class scrape:
 # print(sc.trackInfo())
 
 
-sc = scrape("album", "2021-10-01", "NONE", 1)
-startdate = "2021-10-01"
-
-while int(startdate[-2:]) < 32:
-    print("startdate " + startdate)
-    print(sc.trackInfo())
-    end = int(startdate[-2:]) + 1
-    if(end<10):
-        end = "0" + str(end)
-    print("end " + end)
-    print("new startdate " + startdate[:7] + str(end))
-    sc.setTime(startdate[:7] + str(end))
+# sc = scrape("album", "2021-10-01", "NONE", 1)
+# startdate = "2021-10-01"
+# # print(sc.trackInfo())
+# # while int(startdate[-2:]) < 32:
+# print("startdate " + startdate)
+# # print(sc.trackInfo())
+# end = int(startdate[-2:]) + 1
+# if end<10 :
+#     end = "0" + str(end)
+# newdate = startdate[:8] + str(end)
+# print("end " + end)
+# print("newdate " + newdate)
+# # sc.setTime(newdate)
