@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-import re
+
 
 class scrape:
 
@@ -20,16 +20,13 @@ class scrape:
         temp = str(description[1])
         init = temp.find('"') + 1
         fini = temp.find('"', init + 1)
-        print(temp[init:fini])
         templist = temp[init:fini].split("), ")
-        print(templist)
-        # for i in range(1, len(templist)):
-        #     templist[i] = templist[i][2:]
         del templist[-1]
         test = []
+        # maybe split artist for albums and tracks into another entry? eg (artist, album/track, count)
         for temper in templist:
             play = temper.split(" ")[-1][1:]
-            type = temper[:temper.find(play) - 1]
+            type = temper[:temper.find(play) - 2]
             test.append([type, play])
         if self.size == 0:
             self.size = len(test)
@@ -58,8 +55,8 @@ class scrape:
         return self.__info()
 
 
-sc = scrape("album", "2020-08-01", "2021-11-14",4)
-# sc = scrape("album", "2021-11-15", "NONE", 2)
-# print(sc.artistInfo())
+# sc = scrape("album", "2020-08-01", "2021-11-16",4)
+sc = scrape("album", "2021-11-16", "NONE")
+print(sc.artistInfo())
 print(sc.albumInfo())
-# print(sc.trackInfo())
+print(sc.trackInfo())
