@@ -35,9 +35,12 @@ class scrape:
     def setSize(self, size):
         self.size = size
 
-    def setTime(self, start, end):
+    def setTime(self, start, end="NONE"):
         self.start = start
-        self.end = end
+        if end == "NONE":
+            self.end = start
+        else:
+            self.end = end
 
     def artistInfo(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
@@ -54,9 +57,22 @@ class scrape:
             str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
-
 # sc = scrape("album", "2020-08-01", "2021-11-16",4)
-sc = scrape("album", "2021-11-16", "NONE")
-print(sc.artistInfo())
-print(sc.albumInfo())
-print(sc.trackInfo())
+# sc = scrape("album", "2021-11-16", "NONE")
+# print(sc.artistInfo())
+# print(sc.albumInfo())
+# print(sc.trackInfo())
+
+
+sc = scrape("album", "2021-10-01", "NONE", 1)
+startdate = "2021-10-01"
+
+while int(startdate[-2:]) < 32:
+    print("startdate " + startdate)
+    print(sc.trackInfo())
+    end = int(startdate[-2:]) + 1
+    if(end<10):
+        end = "0" + str(end)
+    print("end " + end)
+    print("new startdate " + startdate[:7] + str(end))
+    sc.setTime(startdate[:7] + str(end))
