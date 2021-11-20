@@ -23,11 +23,16 @@ class scrape:
         templist = temp[init:fini].split("), ")
         del templist[-1]
         test = []
-        # maybe split artist for albums and tracks into another entry? eg (artist, album/track, count)
         for temper in templist:
             play = temper.split(" ")[-1][1:]
-            type = temper[:temper.find(play) - 2]
-            test.append([type, play])
+            unsplit = temper[:temper.find(play) - 2]
+            if self.type != 'artists':
+                splitter = unsplit.find('—')
+                artist = unsplit[:splitter - 1]
+                type = unsplit[splitter + 2:]
+                test.append([artist, type, play])
+            else:
+                test.append([unsplit, play])
         if self.size == 0:
             self.size = len(test)
         return test[:self.size]
@@ -43,25 +48,29 @@ class scrape:
             self.end = end
 
     def artistInfo(self):
+        self.type = 'artists'
         self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
             str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
     def albumInfo(self):
+        self.type = 'albums'
         self.url = "https://www.last.fm/user/vishwarrior/library/albums?from=" + \
             str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
     def trackInfo(self):
+        self.type = 'tracks'
         self.url = "https://www.last.fm/user/vishwarrior/library/tracks?from=" + \
             str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
-# sc = scrape("album", "2020-08-01", "2021-11-16",4)
-# sc = scrape("album", "2021-11-16", "NONE")
-# print(sc.artistInfo())
-# print(sc.albumInfo())
-# print(sc.trackInfo())
+
+# sc = scrape("albums", "2020-08-01", "2021-11-16",4)
+sc = scrape("albums", "2021-11-16", "NONE")
+print(sc.artistInfo())
+print(sc.albumInfo())
+print(sc.trackInfo())
 
 
 # sc = scrape("album", "2021-10-01", "NONE", 1)
