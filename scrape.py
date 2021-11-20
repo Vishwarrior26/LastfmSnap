@@ -65,9 +65,16 @@ class scrape:
             str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
+    def totalInfo(self):
+        self.total = 0
+        for play in self.artistInfo():
+            self.total += int(play[1])
+        return self.total
+
 
 # sc = scrape("albums", "2020-08-01", "2021-11-16",4)
-sc = scrape("albums", "2021-11-16", "NONE")
+sc = scrape("albums", "2021-11-18", "NONE")
+print(sc.totalInfo())
 print(sc.artistInfo())
 print(sc.albumInfo())
 print(sc.trackInfo())
