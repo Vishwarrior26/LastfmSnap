@@ -70,12 +70,15 @@ class scrape:
 
     def totalInfo(self):
         self.total = 0
+        origSize = self.size
+        self.setSize(0)
         for play in self.artistInfo():
             self.total += int(play[1])
+        self.setSize(origSize)
         return self.total
 
 
-sc = scrape("albums", "2020-08-01", "TODAY", 4)
+sc = scrape("albums", "2020-08-01", "TODAY",1)
 # sc = scrape("albums", "2021-11-18", "NONE")
 print(sc.totalInfo())
 print(sc.artistInfo())
@@ -83,7 +86,7 @@ print(sc.albumInfo())
 print(sc.trackInfo())
 
 
-# sc = scrape("album", "2021-10-01", "NONE", 1)
+# sc = scrape("albums", "2021-10-01", "NONE", 1)
 # startdate = "2021-10-01"
 # # print(sc.trackInfo())
 # # while int(startdate[-2:]) < 32:
