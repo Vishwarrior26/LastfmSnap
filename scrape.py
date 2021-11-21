@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+from datetime import date
 
 
 class scrape:
@@ -8,6 +9,8 @@ class scrape:
         self.start = start
         if end == "NONE":
             self.end = start
+        elif end == "TODAY":
+            self.end = str(date.today())
         else:
             self.end = end
         self.type = type
@@ -72,8 +75,8 @@ class scrape:
         return self.total
 
 
-# sc = scrape("albums", "2020-08-01", "2021-11-16",4)
-sc = scrape("albums", "2021-11-18", "NONE")
+sc = scrape("albums", "2020-08-01", "TODAY", 4)
+# sc = scrape("albums", "2021-11-18", "NONE")
 print(sc.totalInfo())
 print(sc.artistInfo())
 print(sc.albumInfo())
