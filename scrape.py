@@ -4,7 +4,7 @@ from datetime import date
 
 
 class scrape:
-
+# Remove type from constructor?
     def __init__(self, type, start, end="NONE", size=0):
         self.start = start
         if end == "NONE":
@@ -78,14 +78,19 @@ class scrape:
         return self.total
 
 
-sc = scrape("albums", "2020-08-01", "TODAY",1)
+# sc = scrape("albums", "2020-08-01", "TODAY",1)
 # sc = scrape("albums", "2021-11-18", "NONE")
+sc = scrape("tracks", "2021-01-01", "TODAY")
+
 print(sc.totalInfo())
-print(sc.artistInfo())
-print(sc.albumInfo())
-print(sc.trackInfo())
+#print(sc.artistInfo())
+#print(sc.albumInfo())
+# print(sc.trackInfo())
 
-
+for y in range(3):
+    for x in sc.trackInfo():
+        print(x[y])
+    print()
 # sc = scrape("albums", "2021-10-01", "NONE", 1)
 # startdate = "2021-10-01"
 # # print(sc.trackInfo())
