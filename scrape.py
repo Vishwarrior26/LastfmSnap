@@ -4,7 +4,7 @@ from datetime import date
 
 
 class scrape:
-# Remove type from constructor?
+# Remove type from constructor? Add page
     def __init__(self, type, start, end="NONE", size=0):
         self.start = start
         if end == "NONE":
