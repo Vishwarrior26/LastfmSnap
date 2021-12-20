@@ -1,34 +1,32 @@
-from datetime import date
+from datetime import date, datetime
 from bs4 import BeautifulSoup
+import pandas as pd
 import math
 import requests
 
 
 class scrape:
     #  Change var names to conform to snake_case
-    # Remove type from constructor? Add page
-    def __init__(self, type, start, end="NONE", size=50):
+    # Remove type from constructor?
+    def __init__(self, size=50, start="TODAY", end="NONE"):
         self.start = start
+        if start == "TODAY":
+            self.start = str(date.today())
         if end == "NONE":
-            self.end = start
+            self.end = self.start
         elif end == "TODAY":
             self.end = str(date.today())
         else:
             self.end = end
-        self.type = type
         self.size = size
         self.pages = int(math.ceil(self.size / 50))
 
     def __info(self):
-        # print(self.pages)
         urls = [self.url]
         for x in range(2, self.pages + 1):
-            # print(self.url + "&page=" + str(x))
             urls.append(self.url + "&page=" + str(x))
-        # print(urls)
         test = []
         for tempUrl in urls:
-            print(tempUrl)
             req = requests.get(tempUrl)
             soup = BeautifulSoup(req.text, "html.parser")
             description = soup.find_all("meta", property="og:description")
@@ -36,6 +34,7 @@ class scrape:
             init = temp.find('"') + 1
             fini = temp.find('"', init + 1)
             templist = temp[init:fini].split("), ")
+            templist[-1] = templist[-1][:-1]
             for temper in templist:
                 play = temper.split(" ")[-1][1:]
                 unsplit = temper[:temper.find(play) - 2]
@@ -46,8 +45,6 @@ class scrape:
                     test.append([artist, kind, play])
                 else:
                     test.append([unsplit, play])
-        # if self.size == 0:
-        #     self.size = len(test)
         return test[:self.size]
 
     def setSize(self, size):
@@ -79,41 +76,30 @@ class scrape:
             str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
-    def totalInfo(self):
-        self.total = 0
-        origSize = self.size
-        self.setSize(0)
-        for play in self.artistInfo():
-            self.total += int(play[1])
-        self.setSize(origSize)
-        return self.total
 
-
-# sc = scrape("albums", "2020-08-01", "TODAY",1)
-# sc = scrape("albums", "2021-11-18", "NONE")
-sc = scrape("tracks", "2021-01-01", "TODAY", 51)
-# print(sc.totalInfo())
+# sc = scrape()
+# sc = scrape(50, "2020-08-02")
+# sc = scrape(45, "2020-08-05")
+# sc = scrape(25, "2021-01-01", "TODAY")
 # print(sc.artistInfo())
 # print(sc.albumInfo())
 # print(sc.trackInfo())
 
-print(sc.artistInfo())
+# print(sc.artistInfo())
 
+sc = scrape(50, "2020-08-02")
+file1 = open("DailyAugust2020Artists.txt", "w")
+
+for day in pd.date_range(start="2020-08-02", end="2020-08-31"):
+    curday = str(day.date())
+    sc.setTime(curday)
+    file1.write(curday)
+    file1.write("\n")
+    file1.writelines("\n".join(str(x) for x in sc.artistInfo()))
+    file1.write("\n")
+# file1.close()
 
 # for y in range(3):
 #     for x in sc.trackInfo():
 #         print(x[y])
 #     print()
-# sc = scrape("albums", "2021-10-01", "NONE", 1)
-# startdate = "2021-10-01"
-# # print(sc.trackInfo())
-# # while int(startdate[-2:]) < 32:
-# print("startdate " + startdate)
-# # print(sc.trackInfo())
-# end = int(startdate[-2:]) + 1
-# if end<10 :
-#     end = "0" + str(end)
-# newdate = startdate[:8] + str(end)
-# print("end " + end)
-# print("newdate " + newdate)
-# # sc.setTime(newdate)
