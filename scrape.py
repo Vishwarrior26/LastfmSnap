@@ -1,11 +1,13 @@
-from bs4 import BeautifulSoup
-import requests
 from datetime import date
+from bs4 import BeautifulSoup
+import math
+import requests
 
 
 class scrape:
-# Remove type from constructor? Add page
-    def __init__(self, type, start, end="NONE", size=0):
+    #  Change var names to conform to snake_case
+    # Remove type from constructor? Add page
+    def __init__(self, type, start, end="NONE", size=50):
         self.start = start
         if end == "NONE":
             self.end = start
@@ -15,33 +17,42 @@ class scrape:
             self.end = end
         self.type = type
         self.size = size
+        self.pages = int(math.ceil(self.size / 50))
 
     def __info(self):
-        req = requests.get(self.url)
-        soup = BeautifulSoup(req.text, "html.parser")
-        description = soup.find_all("meta", property="og:description")
-        temp = str(description[1])
-        init = temp.find('"') + 1
-        fini = temp.find('"', init + 1)
-        templist = temp[init:fini].split("), ")
-        del templist[-1]
+        # print(self.pages)
+        urls = [self.url]
+        for x in range(2, self.pages + 1):
+            # print(self.url + "&page=" + str(x))
+            urls.append(self.url + "&page=" + str(x))
+        # print(urls)
         test = []
-        for temper in templist:
-            play = temper.split(" ")[-1][1:]
-            unsplit = temper[:temper.find(play) - 2]
-            if self.type != 'artists':
-                splitter = unsplit.find('—')
-                artist = unsplit[:splitter - 1]
-                type = unsplit[splitter + 2:]
-                test.append([artist, type, play])
-            else:
-                test.append([unsplit, play])
-        if self.size == 0:
-            self.size = len(test)
+        for tempUrl in urls:
+            print(tempUrl)
+            req = requests.get(tempUrl)
+            soup = BeautifulSoup(req.text, "html.parser")
+            description = soup.find_all("meta", property="og:description")
+            temp = str(description[1])
+            init = temp.find('"') + 1
+            fini = temp.find('"', init + 1)
+            templist = temp[init:fini].split("), ")
+            for temper in templist:
+                play = temper.split(" ")[-1][1:]
+                unsplit = temper[:temper.find(play) - 2]
+                if self.type != 'artists':
+                    splitter = unsplit.find('—')
+                    artist = unsplit[:splitter - 1]
+                    kind = unsplit[splitter + 2:]
+                    test.append([artist, kind, play])
+                else:
+                    test.append([unsplit, play])
+        # if self.size == 0:
+        #     self.size = len(test)
         return test[:self.size]
 
     def setSize(self, size):
         self.size = size
+        self.pages = int(math.ceil(self.size / 50))
 
     def setTime(self, start, end="NONE"):
         self.start = start
@@ -80,17 +91,19 @@ class scrape:
 
 # sc = scrape("albums", "2020-08-01", "TODAY",1)
 # sc = scrape("albums", "2021-11-18", "NONE")
-sc = scrape("tracks", "2021-01-01", "TODAY")
-
-print(sc.totalInfo())
-#print(sc.artistInfo())
-#print(sc.albumInfo())
+sc = scrape("tracks", "2021-01-01", "TODAY", 51)
+# print(sc.totalInfo())
+# print(sc.artistInfo())
+# print(sc.albumInfo())
 # print(sc.trackInfo())
 
-for y in range(3):
-    for x in sc.trackInfo():
-        print(x[y])
-    print()
+print(sc.artistInfo())
+
+
+# for y in range(3):
+#     for x in sc.trackInfo():
+#         print(x[y])
+#     print()
 # sc = scrape("albums", "2021-10-01", "NONE", 1)
 # startdate = "2021-10-01"
 # # print(sc.trackInfo())
