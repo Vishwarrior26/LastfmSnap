@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import math
 import requests
+import csv
 
 
 class scrape:
@@ -88,15 +89,26 @@ class scrape:
 # print(sc.artistInfo())
 
 sc = scrape(50, "2020-08-02")
-file1 = open("DailyAugust2020Artists.txt", "w")
 
-for day in pd.date_range(start="2020-08-02", end="2020-08-31"):
-    curday = str(day.date())
-    sc.setTime(curday)
-    file1.write(curday)
-    file1.write("\n")
-    file1.writelines("\n".join(str(x) for x in sc.artistInfo()))
-    file1.write("\n")
+fields = ["Arist", "Playcount"]
+with open("csvtest.csv", 'w') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow(fields)
+    for day in pd.date_range(start="2020-08-02", end="2020-08-31"):
+        curday = str(day.date())
+        sc.setTime(curday)
+        csvwriter.writerows(sc.artistInfo())
+
+# sc = scrape(50, "2020-08-02")
+# file1 = open("DailyAugust2020Artists.txt", "w")
+#
+# for day in pd.date_range(start="2020-08-02", end="2020-08-31"):
+#     curday = str(day.date())
+#     sc.setTime(curday)
+#     file1.write(curday)
+#     file1.write("\n")
+#     file1.writelines("\n".join(str(x) for x in sc.artistInfo()))
+#     file1.write("\n")
 # file1.close()
 
 # for y in range(3):
