@@ -31,21 +31,22 @@ class scrape:
             req = requests.get(tempUrl)
             soup = BeautifulSoup(req.text, "html.parser")
             description = soup.find_all("meta", property="og:description")
-            temp = str(description[1])
-            init = temp.find('"') + 1
-            fini = temp.find('"', init + 1)
-            templist = temp[init:fini].split("), ")
-            templist[-1] = templist[-1][:-1]
-            for temper in templist:
-                play = temper.split(" ")[-1][1:]
-                unsplit = temper[:temper.find(play) - 2]
-                if self.type != 'artists':
-                    splitter = unsplit.find('—')
-                    artist = unsplit[:splitter - 1]
-                    kind = unsplit[splitter + 2:]
-                    test.append([artist, kind, play])
-                else:
-                    test.append([unsplit, play])
+            if len(description) > 1:
+                temp = str(description[1])
+                init = temp.find('"') + 1
+                fini = temp.find('"', init + 1)
+                templist = temp[init:fini].split("), ")
+                templist[-1] = templist[-1][:-1]
+                for temper in templist:
+                    play = temper.split(" ")[-1][1:]
+                    unsplit = temper[:temper.find(play) - 2]
+                    if self.type != 'artists':
+                        splitter = unsplit.find('—')
+                        artist = unsplit[:splitter - 1]
+                        kind = unsplit[splitter + 2:]
+                        test.append([artist, kind, play])
+                    else:
+                        test.append([unsplit, play])
         return test[:self.size]
 
     def setSize(self, size):
@@ -79,8 +80,7 @@ class scrape:
 
 
 # sc = scrape()
-# sc = scrape(50, "2020-08-02")
-# sc = scrape(45, "2020-08-05")
+# sc = scrape(1, "2021-04-10")
 # sc = scrape(25, "2021-01-01", "TODAY")
 # print(sc.artistInfo())
 # print(sc.albumInfo())
@@ -88,16 +88,16 @@ class scrape:
 
 # print(sc.artistInfo())
 
-sc = scrape(50, "2020-08-02")
-
-fields = ["Arist", "Playcount"]
-with open("csvtest.csv", 'w') as csvfile:
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(fields)
-    for day in pd.date_range(start="2020-08-02", end="2020-08-31"):
-        curday = str(day.date())
-        sc.setTime(curday)
-        csvwriter.writerows(sc.artistInfo())
+# sc = scrape(1, "2020-04-10")
+# fields = ["Arist", "Playcount"]
+# with open("TopArtistDaily.csv", 'w') as csvfile:
+#     csvwriter = csv.writer(csvfile)
+#     csvwriter.writerow(fields)
+#     for day in pd.date_range(start="2020-08-02", end="2021-12-20"):
+#         curday = str(day.date())
+#         print(curday)
+#         sc.setTime(curday)
+#         csvwriter.writerows(sc.artistInfo())
 
 # sc = scrape(50, "2020-08-02")
 # file1 = open("DailyAugust2020Artists.txt", "w")
