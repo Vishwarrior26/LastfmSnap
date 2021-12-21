@@ -4,6 +4,7 @@ import pandas as pd
 import math
 import requests
 import csv
+import re
 
 
 class scrape:
@@ -23,6 +24,8 @@ class scrape:
         self.pages = int(math.ceil(self.size / 50))
 
     def __info(self):
+        self.url = "https://www.last.fm/user/vishwarrior/library/" + \
+            self.type + "?from=" + (self.start) + "&to=" + str(self.end)
         urls = [self.url]
         for x in range(2, self.pages + 1):
             urls.append(self.url + "&page=" + str(x))
@@ -62,31 +65,42 @@ class scrape:
 
     def artistInfo(self):
         self.type = 'artists'
-        self.url = "https://www.last.fm/user/vishwarrior/library/artists?from=" + \
-            str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
     def albumInfo(self):
         self.type = 'albums'
-        self.url = "https://www.last.fm/user/vishwarrior/library/albums?from=" + \
-            str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
     def trackInfo(self):
         self.type = 'tracks'
-        self.url = "https://www.last.fm/user/vishwarrior/library/tracks?from=" + \
-            str(self.start) + "&to=" + str(self.end)
         return self.__info()
 
+    def scrobblesInfo(self):
+        self.url = "https://www.last.fm/user/vishwarrior/library?from=" + \
+            str(self.start) + "&to=" + str(self.end)
+        req = requests.get(self.url)
+        soup = BeautifulSoup(req.text, "html.parser")
+        description = soup.find_all(class_="metadata-display")
+        if len(description) > 0:
+            temp = str(description[0])
+            # swap to extract using regex?
+            # self.total = temp[temp.find(">") + 1:temp.find("<", 1)]
+            self.total = int("".join(str(x) for x in re.findall(
+                "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
+            return self.total
 
-# sc = scrape()
+
+sc = scrape()
+# sc = scrape(1, "2021-11-01", "2021-11-30")
 # sc = scrape(1, "2021-04-10")
 # sc = scrape(25, "2021-01-01", "TODAY")
 # print(sc.artistInfo())
 # print(sc.albumInfo())
 # print(sc.trackInfo())
+print(sc.scrobblesInfo())
+# total = int("".join(str(x) for x in re.findall("[0-9]", sc.scrobblesInfo())))
+# print(total)
 
-# print(sc.artistInfo())
 
 # sc = scrape(1, "2020-04-10")
 # fields = ["Arist", "Playcount"]
