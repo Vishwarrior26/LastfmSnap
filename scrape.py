@@ -90,28 +90,28 @@ class scrape:
             return self.total
 
 
-sc = scrape()
+# sc = scrape()
 # sc = scrape(1, "2021-11-01", "2021-11-30")
 # sc = scrape(1, "2021-04-10")
 # sc = scrape(25, "2021-01-01", "TODAY")
 # print(sc.artistInfo())
 # print(sc.albumInfo())
 # print(sc.trackInfo())
-print(sc.scrobblesInfo())
+# print(sc.scrobblesInfo())
 # total = int("".join(str(x) for x in re.findall("[0-9]", sc.scrobblesInfo())))
 # print(total)
 
-
-# sc = scrape(1, "2020-04-10")
-# fields = ["Arist", "Playcount"]
-# with open("TopArtistDaily.csv", 'w') as csvfile:
-#     csvwriter = csv.writer(csvfile)
-#     csvwriter.writerow(fields)
-#     for day in pd.date_range(start="2020-08-02", end="2021-12-20"):
-#         curday = str(day.date())
-#         print(curday)
-#         sc.setTime(curday)
-#         csvwriter.writerows(sc.artistInfo())
+sc = scrape(1, "2020-04-10")
+fields = ["Date", "Plays"]
+with open("PlaysPerDay.csv", 'w') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow(fields)
+    # for day in pd.date_range(start="2020-08-02", end="2020-08-10"):
+    for day in pd.date_range(start="2020-08-02", end="2021-12-20"):
+        curday = str(day.date())
+        print(curday)
+        sc.setTime(curday)
+        csvwriter.writerow([curday, sc.scrobblesInfo()])
 
 # sc = scrape(50, "2020-08-02")
 # file1 = open("DailyAugust2020Artists.txt", "w")
