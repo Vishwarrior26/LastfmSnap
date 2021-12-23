@@ -101,17 +101,24 @@ class scrape:
 # total = int("".join(str(x) for x in re.findall("[0-9]", sc.scrobblesInfo())))
 # print(total)
 
-sc = scrape(1, "2020-04-10")
-fields = ["Date", "Plays"]
-with open("PlaysPerDay.csv", 'w') as csvfile:
+fields = ["Artist", "Plays"]
+sc = scrape(50, "2020-08-02", "TODAY")
+with open("AllTimeTopArtists.csv", 'w') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
-    # for day in pd.date_range(start="2020-08-02", end="2020-08-10"):
-    for day in pd.date_range(start="2020-08-02", end="2021-12-20"):
-        curday = str(day.date())
-        print(curday)
-        sc.setTime(curday)
-        csvwriter.writerow([curday, sc.scrobblesInfo()])
+    csvwriter.writerows(sc.artistInfo())
+
+# sc = scrape(1, "2020-04-10")
+# fields = ["Date", "Plays"]
+# with open("PlaysPerDay.csv", 'w') as csvfile:
+#     csvwriter = csv.writer(csvfile)
+#     csvwriter.writerow(fields)
+#     # for day in pd.date_range(start="2020-08-02", end="2020-08-10"):
+#     for day in pd.date_range(start="2020-08-02", end="2021-12-20"):
+#         curday = str(day.date())
+#         print(curday)
+#         sc.setTime(curday)
+#         csvwriter.writerow([curday, sc.scrobblesInfo()])
 
 # sc = scrape(50, "2020-08-02")
 # file1 = open("DailyAugust2020Artists.txt", "w")
