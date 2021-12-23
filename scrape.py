@@ -101,12 +101,12 @@ class scrape:
 # total = int("".join(str(x) for x in re.findall("[0-9]", sc.scrobblesInfo())))
 # print(total)
 
-fields = ["Artist", "Plays"]
-sc = scrape(50, "2020-08-02", "TODAY")
-with open("AllTimeTopArtists.csv", 'w') as csvfile:
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(fields)
-    csvwriter.writerows(sc.artistInfo())
+# fields = ["Tracks", "Plays"]
+# sc = scrape(50, "2020-08-02", "TODAY")
+# with open("AllTimeTopTracks.csv", 'w') as csvfile:
+#     csvwriter = csv.writer(csvfile)
+#     csvwriter.writerow(fields)
+#     csvwriter.writerows(sc.trackInfo())
 
 # sc = scrape(1, "2020-04-10")
 # fields = ["Date", "Plays"]
