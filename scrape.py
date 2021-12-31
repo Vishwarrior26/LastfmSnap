@@ -20,7 +20,7 @@ class scrape:
         else:
             self.end = end
         if size != "MAX":
-            self.size = size
+            self.size = int(size)
             self.pages = int(math.ceil(self.size / 50))
         else:
             self.size = None

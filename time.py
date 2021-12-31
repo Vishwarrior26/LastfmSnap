@@ -1,17 +1,23 @@
 from mutagen.mp3 import MP3
 import scrape
 import csv
-# sc = scrape.scrape(10, "2021-08-15", "TODAY")
+import pandas as pd
+
 sc = scrape.scrape("MAX", "2020-08-02", "TODAY")
 # print(sc.artistInfo())
-print("Writing to CSV")
-fields = ["Tracks", "Plays", "Time"]
-with open("TopTracksWithTime.csv", 'w', encoding='utf-8') as csvfile:
+# print("Writing to CSV")
+fields = ["Artist", "Tracks", "Plays"]
+with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
     csvwriter.writerows(sc.trackInfo())
-# tempinfo = sc.trackInfo()
-# print(tempinfo)
+
+tempinfo = []
+with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
+    csvreader = csv.reader(csvfile)
+    for row in csvreader:
+        tempinfo.append(row)
+print(tempinfo)
 # for temp in tempinfo:
 #     artist = temp[0]
 #     track = temp[1]
