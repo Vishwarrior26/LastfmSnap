@@ -1,3 +1,4 @@
+from mutagen.mp3 import MP3
 from datetime import date, datetime
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -26,6 +27,7 @@ class scrape:
     def __info(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/" + \
             self.type + "?from=" + (self.start) + "&to=" + str(self.end)
+        # print(self.url)
         urls = [self.url]
         for x in range(2, self.pages + 1):
             urls.append(self.url + "&page=" + str(x))
@@ -41,8 +43,8 @@ class scrape:
                 templist = temp[init:fini].split("), ")
                 templist[-1] = templist[-1][:-1]
                 for temper in templist:
-                    play = temper.split(" ")[-1][1:]
-                    unsplit = temper[:temper.find(play) - 2]
+                    play = int(temper.split(" ")[-1][1:])
+                    unsplit = temper[:temper.find(str(play)) - 2]
                     if self.type != 'artists':
                         splitter = unsplit.find('—')
                         artist = unsplit[:splitter - 1]
@@ -101,6 +103,15 @@ class scrape:
 # total = int("".join(str(x) for x in re.findall("[0-9]", sc.scrobblesInfo())))
 # print(total)
 
+sc = scrape(1, "2021-08-15")
+tempinfo = sc.trackInfo()[0]
+# print(tempinfo)
+path = "D:\\Music\\" + tempinfo[0] + "\\" + tempinfo[1] + ".mp3"
+# print(path)
+audio = MP3(path)
+print(audio.info.length)
+# print(round(int(audio.info.length) * int(tempinfo[2]) / 60, 3))
+print(round(int(audio.info.length) * tempinfo[2] / 60, 3))
 # fields = ["Tracks", "Plays"]
 # sc = scrape(50, "2020-08-02", "TODAY")
 # with open("AllTimeTopTracks.csv", 'w') as csvfile:
