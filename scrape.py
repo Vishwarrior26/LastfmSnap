@@ -9,7 +9,7 @@ import re
 
 
 class scrape:
-    #  Change var names to conform to snake_case
+    # Change var names to conform to snake_case
     # Remove type from constructor?
     def __init__(self, size=50, start="TODAY", end="NONE"):
         self.start = start
