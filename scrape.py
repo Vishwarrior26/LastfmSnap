@@ -1,10 +1,8 @@
-from mutagen.mp3 import MP3
 from datetime import date, datetime
 from bs4 import BeautifulSoup
 import pandas as pd
 import math
 import requests
-import csv
 import re
 
 
