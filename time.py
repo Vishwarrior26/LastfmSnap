@@ -21,7 +21,7 @@ with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
 errors = []
 for i in range(1, len(tempinfo)):
     # print(int(math.ceil(i / 50)))
-    print(i)
+    # print(i)
     temp = tempinfo[i]
     artist = temp[0]
     track = temp[1]
@@ -57,8 +57,6 @@ for i in range(1, len(tempinfo)):
         track = "El Manana"
     if track == "The Monkey Book":
         track = "Pork Parts"
-    # if track == "(I Can't Get No) Satisfaction":
-    #     track = "Satisfaction"
     if track == "Andúril":
         track = "Anduril"
     if track == "Main Menu" and artist == "Asuka Ohta, Ryo Nagamatsu":
@@ -69,36 +67,19 @@ for i in range(1, len(tempinfo)):
         track = "Welcome Home (Sanitarium)"
     if track == "God's Gift":
         track = "Gods Gift"
-    # if track == "Pressure Points (Instrumental)":
-    #     track = "Pressure Points"
     path = "D:\\Music\\" + artist + "\\" + track + ".mp3"
     if path == "D:\\Music\\Dire Straits\\The Man’s Too Strong.mp3":
         path = "D:\Music\Dire Straits\The Man's Too Strong.mp3"
-    # print(path)
     try:
         audio = MP3(path)
         temp.append(round(int(audio.info.length) * plays / 60, 3))
     except:
-        tempinfo.remove(temp)
-        i -= 1
-        # errors.append([path, i, int(math.ceil(i / 50))])
-        # errors.append(temp)
-        # print(i)
-        # del tempinfo[i]
-        # print(i)
-        # # tempinfo.remove(i)
-        # i -= 1
-        # print(path + " not found")
-# print()
-# i = 0
-# for x in errors:
-#     print(i)
-#     i += 1
-#     tempinfo.remove(x)
-    # print(x[1])
-    # del tempinfo[x[1]]
-    # print()
-    # tempinfo.remove(x[1])
+        errors.append(temp)
+for x in errors:
+    tempinfo.remove(x)
+
+# TODO Sort by total time listened [x-1] for each row somehow. Swap to numpy array?
 # print(len(tempinfo))
 # print(tempinfo)
+# print(tempinfo[1:].sort(key=lambda x: x[-1]))
 # print(errors)
