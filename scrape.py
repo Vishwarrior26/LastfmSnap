@@ -21,14 +21,22 @@ class scrape:
             self.end = str(date.today())
         else:
             self.end = end
-        self.size = size
-        self.pages = int(math.ceil(self.size / 50))
+        if size != "MAX":
+            self.size = size
+            self.pages = int(math.ceil(self.size / 50))
+        else:
+            self.size = None
 
     def __info(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/" + \
             self.type + "?from=" + (self.start) + "&to=" + str(self.end)
         # print(self.url)
         urls = [self.url]
+        if self.size is None:
+            req = requests.get(self.url)
+            soup = BeautifulSoup(req.text, "html.parser")
+            description = soup.find_all(class_="pagination-page")
+            self.pages = int(re.findall('[0-9]+', str(description[-1]))[-1])
         for x in range(2, self.pages + 1):
             urls.append(self.url + "&page=" + str(x))
         test = []
