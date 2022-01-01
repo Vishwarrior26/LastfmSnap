@@ -1,3 +1,4 @@
+from operator import itemgetter
 from mutagen.mp3 import MP3
 import scrape
 import csv
@@ -79,7 +80,7 @@ for temp in tempinfo[1:]:
     except:
         tempinfo.remove(temp)
         # errors.append(temp)
-print(Artists)
+# print(Artists)
 for temper in Artists:
     artist = temper[0]
     for temp in tempinfo:
@@ -87,6 +88,8 @@ for temper in Artists:
             temper[1] += int(temp[2])
             temper[2] += int(temp[3])
 print(Artists)
+print(sorted(Artists, key=itemgetter(2), reverse=True))
+print(sorted(Artists, key=itemgetter(1), reverse=True))
 # fields = ["Artist", "Tracks", "Plays", "Time"]
 # with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
 #     csvwriter = csv.writer(csvfile)
