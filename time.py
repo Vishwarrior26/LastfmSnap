@@ -77,6 +77,8 @@ for temp in tempinfo:
         audio = MP3(path)
         temp.append(round(int(audio.info.length) * plays / 60, 3))
     except:
+        print(path)
+        print(temp)
         tempinfo.remove(temp)
 # print(tempinfo)
 # x = 0
