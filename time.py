@@ -69,8 +69,7 @@ for temp in tempinfo[1:]:
     if track == "God's Gift":
         track = "Gods Gift"
     path = "D:\\Music\\" + artist + "\\" + track + ".mp3"
-    if artist not in Artists[0]:
-        print(Artists)
+    if artist not in (row[0] for row in Artists):
         Artists.append([artist, 0, 0])
     if path == "D:\\Music\\Dire Straits\\The Man’s Too Strong.mp3":
         path = "D:\Music\Dire Straits\The Man's Too Strong.mp3"
@@ -81,11 +80,12 @@ for temp in tempinfo[1:]:
         tempinfo.remove(temp)
         # errors.append(temp)
 print(Artists)
-for artist in Artists:
+for temper in Artists:
+    artist = temper[0]
     for temp in tempinfo:
         if temp[0] == artist:
-            Artists[1] += temp[2]
-            Artists[2] += temp[3]
+            temper[1] += int(temp[2])
+            temper[2] += int(temp[3])
 print(Artists)
 # fields = ["Artist", "Tracks", "Plays", "Time"]
 # with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
