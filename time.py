@@ -19,6 +19,7 @@ with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
     for row in csvreader:
         tempinfo.append(row)
 # errors = []
+Artists = []
 for temp in tempinfo[1:]:
     # print(int(math.ceil(i / 50)))
     # print(i)
@@ -68,6 +69,9 @@ for temp in tempinfo[1:]:
     if track == "God's Gift":
         track = "Gods Gift"
     path = "D:\\Music\\" + artist + "\\" + track + ".mp3"
+    if artist not in Artists[0]:
+        print(Artists)
+        Artists.append([artist, 0, 0])
     if path == "D:\\Music\\Dire Straits\\The Man’s Too Strong.mp3":
         path = "D:\Music\Dire Straits\The Man's Too Strong.mp3"
     try:
@@ -76,12 +80,18 @@ for temp in tempinfo[1:]:
     except:
         tempinfo.remove(temp)
         # errors.append(temp)
-
-fields = ["Artist", "Tracks", "Plays", "Time"]
-with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(fields)
-    csvwriter.writerows(tempinfo)
+print(Artists)
+for artist in Artists:
+    for temp in tempinfo:
+        if temp[0] == artist:
+            Artists[1] += temp[2]
+            Artists[2] += temp[3]
+print(Artists)
+# fields = ["Artist", "Tracks", "Plays", "Time"]
+# with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+#     csvwriter = csv.writer(csvfile)
+#     csvwriter.writerow(fields)
+#     csvwriter.writerows(tempinfo)
 
 # for x in errors:
 #     tempinfo.remove(x)
