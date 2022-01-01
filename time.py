@@ -18,11 +18,11 @@ with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
     csvreader = csv.reader(csvfile)
     for row in csvreader:
         tempinfo.append(row)
-errors = []
-for i in range(1, len(tempinfo)):
+# errors = []
+for temp in tempinfo[1:]:
     # print(int(math.ceil(i / 50)))
     # print(i)
-    temp = tempinfo[i]
+    # temp = tempinfo[i]
     artist = temp[0]
     track = temp[1]
     plays = int(temp[2])
@@ -74,9 +74,17 @@ for i in range(1, len(tempinfo)):
         audio = MP3(path)
         temp.append(round(int(audio.info.length) * plays / 60, 3))
     except:
-        errors.append(temp)
-for x in errors:
-    tempinfo.remove(x)
+        tempinfo.remove(temp)
+        # errors.append(temp)
+
+fields = ["Artist", "Tracks", "Plays", "Time"]
+with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow(fields)
+    csvwriter.writerows(tempinfo)
+
+# for x in errors:
+#     tempinfo.remove(x)
 
 # TODO Sort by total time listened [x-1] for each row somehow. Swap to numpy array?
 # print(len(tempinfo))
