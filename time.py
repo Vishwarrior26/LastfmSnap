@@ -5,26 +5,24 @@ import csv
 import pandas as pd
 import math
 import re
+
 # sc = scrape.scrape("MAX", "2020-08-02", "TODAY")
-# # print(sc.artistInfo())
-# # print("Writing to CSV")
 # fields = ["Artist", "Tracks", "Plays"]
 # with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
 #     csvwriter = csv.writer(csvfile)
 #     csvwriter.writerow(fields)
 #     csvwriter.writerows(sc.trackInfo())
 
+# sc = scrape.scrape("MAX", "2020-08-02", "TODAY")
+# tempinfo = sc.trackInfo
+
 tempinfo = []
 with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
     csvreader = csv.reader(csvfile)
     for row in csvreader:
         tempinfo.append(row)
-# errors = []
 Artists = []
 for temp in tempinfo[1:]:
-    # print(int(math.ceil(i / 50)))
-    # print(i)
-    # temp = tempinfo[i]
     artist = temp[0]
     track = temp[1]
     plays = int(temp[2])
@@ -79,28 +77,25 @@ for temp in tempinfo[1:]:
         temp.append(round(int(audio.info.length) * plays / 60, 3))
     except:
         tempinfo.remove(temp)
-        # errors.append(temp)
-# print(Artists)
+print(tempinfo)
+fields = ["Artist", "Tracks", "Plays", "Time"]
+with open("TopTracksWithTime1.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow(fields)
+    csvwriter.writerows(sorted(tempinfo[1:], key=itemgetter(3), reverse=True))
+
 for temper in Artists:
     artist = temper[0]
     for temp in tempinfo:
         if temp[0] == artist:
             temper[1] += int(temp[2])
             temper[2] += int(temp[3])
-print(Artists)
+
 print(sorted(Artists, key=itemgetter(2), reverse=True))
 print(sorted(Artists, key=itemgetter(1), reverse=True))
+
 # fields = ["Artist", "Tracks", "Plays", "Time"]
 # with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
 #     csvwriter = csv.writer(csvfile)
 #     csvwriter.writerow(fields)
 #     csvwriter.writerows(tempinfo)
-
-# for x in errors:
-#     tempinfo.remove(x)
-
-# TODO Sort by total time listened [x-1] for each row somehow. Swap to numpy array?
-# print(len(tempinfo))
-# print(tempinfo)
-# print(tempinfo[1:].sort(key=lambda x: x[-1]))
-# print(errors)
