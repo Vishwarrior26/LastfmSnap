@@ -6,24 +6,24 @@ import pandas as pd
 import math
 import re
 
-sc = scrape.scrape("MAX", "2020-08-02", "TODAY")
-fields = ["Artist", "Tracks", "Plays"]
-with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(fields)
-    csvwriter.writerows(sc.trackInfo())
+sc = scrape.scrape("MAX", "2021-01-01", "2021-12-31")
+# fields = ["Artist", "Tracks", "Plays"]
+# with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+#     csvwriter = csv.writer(csvfile)
+#     csvwriter.writerow(fields)
+#     csvwriter.writerows(sc.trackInfo())
+#
+# tempinfo = []
+# with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
+#     csvreader = csv.reader(csvfile)
+#     for row in csvreader:
+#         tempinfo.append(row)
 
-tempinfo = []
-with open("TopTracksWithTime.csv", 'r', encoding='utf-8') as csvfile:
-    csvreader = csv.reader(csvfile)
-    for row in csvreader:
-        tempinfo.append(row)
-
-# sc = scrape.scrape("MAX", "2020-08-02", "TODAY")
-# tempinfo = sc.trackInfo()
+tempinfo = sc.trackInfo()
 
 Artists = []
-for temp in tempinfo[1:]:
+# Ignore first row if using CSV
+for temp in tempinfo:
     artist = temp[0]
     track = temp[1]
     plays = int(temp[2])
@@ -79,23 +79,35 @@ for temp in tempinfo[1:]:
     except:
         tempinfo.remove(temp)
 # print(tempinfo)
+# x = 0
+# for temp in tempinfo:
+#     print(x)
+#     print(temp)
+#     print(temp[3])
+#     x += 1
+
+# tempinfo = sorted(tempinfo, key=itemgetter(-1), reverse=True)
+# print(tempinfo)
 fields = ["Artist", "Tracks", "Plays", "Time"]
-with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+with open("2021Tracks.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
-    csvwriter.writerows(sorted(tempinfo[1:], key=itemgetter(3), reverse=True))
+    csvwriter.writerows(sorted(tempinfo, key=itemgetter(-1), reverse=True))
 
+# print(Artists)
 for temper in Artists:
     artist = temper[0]
     for temp in tempinfo:
         if temp[0] == artist:
             temper[1] += int(temp[2])
-            temper[2] += int(temp[3])
+            temper[2] += int(temp[-1])
 fields = ["Artist", "Plays", "Time"]
-with open("TopArtistsWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+with open("2021Artists.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
-    csvwriter.writerows(sorted(Artists, key=itemgetter(2), reverse=True))
+    csvwriter.writerows(sorted(Artists, key=itemgetter(-1), reverse=True))
+
+
 # print(sorted(Artists, key=itemgetter(2), reverse=True))
 # print(sorted(Artists, key=itemgetter(1), reverse=True))
 
