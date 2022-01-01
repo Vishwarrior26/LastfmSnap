@@ -5,17 +5,21 @@ import matplotlib.pyplot as plt
 # df.plot()
 # plt.show()
 
-df = pd.read_csv('AllTimeTopArtists.csv')
-# print(df)
-df.plot(x='Artists', kind='bar')
+# df = pd.read_csv('AllTimeTopArtists.csv')
+# # print(df)
+# df.plot(x='Artists', kind='bar')
+#
+# df = pd.read_csv('AllTimeTopAlbums.csv')
+# # print(df)
+# df.plot(x='Albums', kind='bar')
+#
+# df = pd.read_csv('AllTimeTopTracks.csv')
+# # print(df)
+# df.plot(x='Tracks', kind='bar')
 
-df = pd.read_csv('AllTimeTopAlbums.csv')
-# print(df)
-df.plot(x='Albums', kind='bar')
-
-df = pd.read_csv('AllTimeTopTracks.csv')
+df = pd.read_csv('TrackTotalTimes.csv', engine='python',
+                 header=0, nrows=100)
 # print(df)
 df.plot(x='Tracks', kind='bar')
-
 
 plt.show()
