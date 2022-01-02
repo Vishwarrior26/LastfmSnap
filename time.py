@@ -6,7 +6,10 @@ import pandas as pd
 import math
 import re
 
-sc = scrape.scrape("MAX", "2021-01-01", "2021-12-31")
+# Pulls all info about scrobbles over given time period
+# sc = scrape.scrape("MAX", "2021-01-01", "2021-12-31")
+# tempinfo = sc.trackInfo()
+
 # fields = ["Artist", "Tracks", "Plays"]
 # with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
 #     csvwriter = csv.writer(csvfile)
@@ -19,14 +22,14 @@ sc = scrape.scrape("MAX", "2021-01-01", "2021-12-31")
 #     for row in csvreader:
 #         tempinfo.append(row)
 
-tempinfo = sc.trackInfo()
-
-Artists = []
-# Ignore first row if using CSV
-for temp in tempinfo:
+artists = []
+# Pulls time for each track
+# NOTE: Ignore first row if using CSV
+for temp in tempinfo:  # tempinfo[1:]
     artist = temp[0]
     track = temp[1]
     plays = int(temp[2])
+    # Formatting fixes
     artist = artist.replace("&quot;", " ").lstrip(' ')
     artist = artist.replace("&amp;", "&")
     artist = artist.replace("/", " ")
@@ -69,52 +72,36 @@ for temp in tempinfo:
     if track == "God's Gift":
         track = "Gods Gift"
     path = "D:\\Music\\" + artist + "\\" + track + ".mp3"
-    if artist not in (row[0] for row in Artists):
-        Artists.append([artist, 0, 0])
+    if artist not in (row[0] for row in artists):
+        artists.append([artist, 0, 0])
     if path == "D:\\Music\\Dire Straits\\The Man’s Too Strong.mp3":
         path = "D:\Music\Dire Straits\The Man's Too Strong.mp3"
     try:
         audio = MP3(path)
         temp.append(round(int(audio.info.length) * plays / 60, 3))
     except:
-        print(path)
-        print(temp)
+        # Removes tracks whose files aren't found
         tempinfo.remove(temp)
-# print(tempinfo)
-# x = 0
-# for temp in tempinfo:
-#     print(x)
-#     print(temp)
-#     print(temp[3])
-#     x += 1
 
-# tempinfo = sorted(tempinfo, key=itemgetter(-1), reverse=True)
-# print(tempinfo)
+
+# Writes track info to a file
 fields = ["Artist", "Tracks", "Plays", "Time"]
 with open("2021Tracks.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
     csvwriter.writerows(sorted(tempinfo, key=itemgetter(-1), reverse=True))
 
-# print(Artists)
-for temper in Artists:
+# Gets artist info by summing all track info for each artist
+for temper in artists:
     artist = temper[0]
     for temp in tempinfo:
         if temp[0] == artist:
             temper[1] += int(temp[2])
             temper[2] += int(temp[-1])
+
+# Writes artist info to a file
 fields = ["Artist", "Plays", "Time"]
-with open("2021Artists.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+with open("2021artists.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
-    csvwriter.writerows(sorted(Artists, key=itemgetter(-1), reverse=True))
-
-
-# print(sorted(Artists, key=itemgetter(2), reverse=True))
-# print(sorted(Artists, key=itemgetter(1), reverse=True))
-
-# fields = ["Artist", "Tracks", "Plays", "Time"]
-# with open("TrackTotalTimes.csv", 'w', encoding='utf-8',  newline='') as csvfile:
-#     csvwriter = csv.writer(csvfile)
-#     csvwriter.writerow(fields)
-#     csvwriter.writerows(tempinfo)
+    csvwriter.writerows(sorted(artists, key=itemgetter(-1), reverse=True))
