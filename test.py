@@ -2,7 +2,7 @@ from operator import itemgetter
 import scrape
 import csv
 
-sc = scrape.scrape("100", "ALL")
+sc = scrape.scrape()
 # artists = []
 # tempinfo = sc.trackInfo()
 #
@@ -17,4 +17,4 @@ sc = scrape.scrape("100", "ALL")
 #
 # print(sorted(artists, key=itemgetter(-1), reverse=True))
 
-sc.artistInfo()
+print(sc.artistCounts())

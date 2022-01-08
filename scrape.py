@@ -9,6 +9,8 @@ import re
 
 class scrape:
     # Change var names to conform to snake_case
+    """" This is the constructor docstring """
+
     def __init__(self, size=50, start="TODAY", end="NONE"):
         self.start = start
         if start == "TODAY":
@@ -29,46 +31,46 @@ class scrape:
             self.size = None
 
     def __clean(self, tempinfo):
-        for temp in tempinfo:
-            temp[0] = temp[0].replace("&quot;", " ").lstrip(' ')
-            temp[0] = temp[0].replace("&amp;", "&")
-            temp[0] = temp[0].replace("/", " ")
-            temp[0] = temp[0].replace(":", " ")
-            if temp[0] == "永田権太":
-                temp[0] = "Kenta Nagata"
-            if temp[0] == "The Scorpions":
-                temp[0] = "Scorpions"
-            if temp[0] == "Vitalis Eirich Stephen Rippy" or temp[0] == "David Rippy, Stephen Rippy":
-                temp[0] = "Stephen Rippy"
-            if temp[0] == "Ludwig Göransson":
-                temp[0] = "Ludwig Goransson"
-            if temp[0] == "Zack Bower" or temp[0] == "The Rolling Stones" or temp[0] == "Camel":
-                temp[-2] = re.sub(r" ?\([^)]+\)", "", temp[-2]).lstrip(' ')
-            if temp[0] == "Dire Straits" and temp[-2] == " Romeo and Juliet":
-                temp[-2] = "Romeo & Juliet"
-            temp[-2] = temp[-2].replace("&amp;", "&")
-            temp[-2] = temp[-2].replace(":", " ")
-            temp[-2] = temp[-2].replace("?", " ")
-            temp[-2] = temp[-2].replace("/", " ")
-            temp[-2] = temp[-2].replace("&quot;", " ").lstrip(' ')
-            if temp[-2] == "The Bridge of Khazad Dum":
-                temp[-2] = "The Bridge of Khazad-Dûm"
-            if temp[-2] == "Mary Jane's Last Dance":
-                temp[0] = "Tom Petty and The Heartbreakers"
-            if temp[-2] == "El Mañana":
-                temp[-2] = "El Manana"
-            if temp[-2] == "The Monkey Book":
-                temp[-2] = "Pork Parts"
-            if temp[-2] == "Andúril":
-                temp[-2] = "Anduril"
-            if temp[-2] == "Main Menu" and temp[0] == "Asuka Ohta, Ryo Nagamatsu":
-                temp[-2] = "Title"
-            if temp[-2] == "2112  I. Overture   II. The Temples of Syrinx   III. Discovery   IV. Presentation   V. Oracle  the Dream   VI. Soliloquy   VII. Grand Finale":
-                temp[-2] = "2112"
-            if temp[-2] == "Welcome Home":
-                temp[-2] = "Welcome Home (Sanitarium)"
-            if temp[-2] == "God's Gift":
-                temp[-2] = "Gods Gift"
+        for info in tempinfo:
+            info[0] = info[0].replace("&quot;", " ").lstrip(' ')
+            info[0] = info[0].replace("&amp;", "&")
+            info[0] = info[0].replace("/", " ")
+            info[0] = info[0].replace(":", " ")
+            if info[0] == "永田権太":
+                info[0] = "Kenta Nagata"
+            if info[0] == "The Scorpions":
+                info[0] = "Scorpions"
+            if info[0] == "Vitalis Eirich Stephen Rippy" or info[0] == "David Rippy, Stephen Rippy":
+                info[0] = "Stephen Rippy"
+            if info[0] == "Ludwig Göransson":
+                info[0] = "Ludwig Goransson"
+            if info[0] == "Zack Bower" or info[0] == "The Rolling Stones" or info[0] == "Camel":
+                info[-2] = re.sub(r" ?\([^)]+\)", "", info[-2]).lstrip(' ')
+            if info[0] == "Dire Straits" and info[-2] == " Romeo and Juliet":
+                info[-2] = "Romeo & Juliet"
+            info[-2] = info[-2].replace("&amp;", "&")
+            info[-2] = info[-2].replace(":", " ")
+            info[-2] = info[-2].replace("?", " ")
+            info[-2] = info[-2].replace("/", " ")
+            info[-2] = info[-2].replace("&quot;", " ").lstrip(' ')
+            if info[-2] == "The Bridge of Khazad Dum":
+                info[-2] = "The Bridge of Khazad-Dûm"
+            if info[-2] == "Mary Jane's Last Dance":
+                info[0] = "Tom Petty and The Heartbreakers"
+            if info[-2] == "El Mañana":
+                info[-2] = "El Manana"
+            if info[-2] == "The Monkey Book":
+                info[-2] = "Pork Parts"
+            if info[-2] == "Andúril":
+                info[-2] = "Anduril"
+            if info[-2] == "Main Menu" and info[0] == "Asuka Ohta, Ryo Nagamatsu":
+                info[-2] = "Title"
+            if info[-2] == "2112  I. Overture   II. The Temples of Syrinx   III. Discovery   IV. Presentation   V. Oracle  the Dream   VI. Soliloquy   VII. Grand Finale":
+                info[-2] = "2112"
+            if info[-2] == "Welcome Home":
+                info[-2] = "Welcome Home (Sanitarium)"
+            if info[-2] == "God's Gift":
+                info[-2] = "Gods Gift"
 
     def __info(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/" + \
@@ -81,7 +83,7 @@ class scrape:
             self.pages = int(re.findall('[0-9]+', str(description[-1]))[-1])
         for x in range(2, self.pages + 1):
             urls.append(self.url + "&page=" + str(x))
-        test = []
+        info = []
         for tempUrl in urls:
             req = requests.get(tempUrl)
             soup = BeautifulSoup(req.text, "html.parser")
@@ -99,11 +101,11 @@ class scrape:
                         splitter = unsplit.find('—')
                         artist = unsplit[:splitter - 1]
                         kind = unsplit[splitter + 2:]
-                        test.append([artist, kind, play])
+                        info.append([artist, kind, play])
                     else:
-                        test.append([unsplit, play])
-        self.__clean(test)
-        return test[:self.size]
+                        info.append([unsplit, play])
+        self.__clean(info)
+        return info[:self.size]
 
     def setSize(self, size):
         self.size = size
