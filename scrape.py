@@ -9,7 +9,6 @@ import re
 
 class scrape:
     # Change var names to conform to snake_case
-    # Remove type from constructor?
     def __init__(self, size=50, start="TODAY", end="NONE"):
         self.start = start
         if start == "TODAY":
@@ -43,39 +42,37 @@ class scrape:
                 temp[0] = "Stephen Rippy"
             if temp[0] == "Ludwig Göransson":
                 temp[0] = "Ludwig Goransson"
-            if self.type != 'artists':
-                if temp[0] == "Zack Bower" or temp[0] == "The Rolling Stones" or temp[0] == "Camel":
-                    temp[1] = re.sub(r" ?\([^)]+\)", "", temp[1]).lstrip(' ')
-                if temp[0] == "Dire Straits" and temp[1] == " Romeo and Juliet":
-                    temp[1] = "Romeo & Juliet"
-                temp[1] = temp[1].replace("&amp;", "&")
-                temp[1] = temp[1].replace(":", " ")
-                temp[1] = temp[1].replace("?", " ")
-                temp[1] = temp[1].replace("/", " ")
-                temp[1] = temp[1].replace("&quot;", " ").lstrip(' ')
-                if temp[1] == "The Bridge of Khazad Dum":
-                    temp[1] = "The Bridge of Khazad-Dûm"
-                if temp[1] == "Mary Jane's Last Dance":
-                    temp[0] = "Tom Petty and The Heartbreakers"
-                if temp[1] == "El Mañana":
-                    temp[1] = "El Manana"
-                if temp[1] == "The Monkey Book":
-                    temp[1] = "Pork Parts"
-                if temp[1] == "Andúril":
-                    temp[1] = "Anduril"
-                if temp[1] == "Main Menu" and temp[0] == "Asuka Ohta, Ryo Nagamatsu":
-                    temp[1] = "Title"
-                if temp[1] == "2112  I. Overture   II. The Temples of Syrinx   III. Discovery   IV. Presentation   V. Oracle  the Dream   VI. Soliloquy   VII. Grand Finale":
-                    temp[1] = "2112"
-                if temp[1] == "Welcome Home":
-                    temp[1] = "Welcome Home (Sanitarium)"
-                if temp[1] == "God's Gift":
-                    temp[1] = "Gods Gift"
+            if temp[0] == "Zack Bower" or temp[0] == "The Rolling Stones" or temp[0] == "Camel":
+                temp[-2] = re.sub(r" ?\([^)]+\)", "", temp[-2]).lstrip(' ')
+            if temp[0] == "Dire Straits" and temp[-2] == " Romeo and Juliet":
+                temp[-2] = "Romeo & Juliet"
+            temp[-2] = temp[-2].replace("&amp;", "&")
+            temp[-2] = temp[-2].replace(":", " ")
+            temp[-2] = temp[-2].replace("?", " ")
+            temp[-2] = temp[-2].replace("/", " ")
+            temp[-2] = temp[-2].replace("&quot;", " ").lstrip(' ')
+            if temp[-2] == "The Bridge of Khazad Dum":
+                temp[-2] = "The Bridge of Khazad-Dûm"
+            if temp[-2] == "Mary Jane's Last Dance":
+                temp[0] = "Tom Petty and The Heartbreakers"
+            if temp[-2] == "El Mañana":
+                temp[-2] = "El Manana"
+            if temp[-2] == "The Monkey Book":
+                temp[-2] = "Pork Parts"
+            if temp[-2] == "Andúril":
+                temp[-2] = "Anduril"
+            if temp[-2] == "Main Menu" and temp[0] == "Asuka Ohta, Ryo Nagamatsu":
+                temp[-2] = "Title"
+            if temp[-2] == "2112  I. Overture   II. The Temples of Syrinx   III. Discovery   IV. Presentation   V. Oracle  the Dream   VI. Soliloquy   VII. Grand Finale":
+                temp[-2] = "2112"
+            if temp[-2] == "Welcome Home":
+                temp[-2] = "Welcome Home (Sanitarium)"
+            if temp[-2] == "God's Gift":
+                temp[-2] = "Gods Gift"
 
     def __info(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/" + \
             self.type + "?from=" + (self.start) + "&to=" + str(self.end)
-        # print(self.url)
         urls = [self.url]
         if self.size is None:
             req = requests.get(self.url)
@@ -151,13 +148,6 @@ class scrape:
         description = soup.find_all(class_="metadata-display")
         if len(description) > 0:
             temp = str(description[0])
-            # swap to extract using regex?
-            # self.total = temp[temp.find(">") + 1:temp.find("<", 1)]
             self.total = int("".join(str(x) for x in re.findall(
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
-
-
-sc = scrape("100", "ALL")
-# print(sc.albumInfo())
-print(sc.trackInfo())
