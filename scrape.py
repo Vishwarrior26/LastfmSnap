@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from bs4 import BeautifulSoup
+from operator import itemgetter
 import pandas as pd
 import math
 import requests
@@ -85,6 +86,18 @@ class scrape:
     def trackInfo(self):
         self.type = 'tracks'
         return self.__info()
+
+    def artistCounts(self):
+        artists = []
+        for temp in self.trackInfo():
+            artist = temp[0]
+            if artist not in (row[0] for row in artists):
+                artists.append([artist, 1])
+            else:
+                for row in artists:
+                    if row[0] == artist:
+                        row[-1] += 1
+        return sorted(artists, key=itemgetter(-1), reverse=True)
 
     def scrobblesInfo(self):
         self.url = "https://www.last.fm/user/vishwarrior/library?from=" + \
