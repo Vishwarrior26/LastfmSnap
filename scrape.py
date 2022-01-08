@@ -29,6 +29,49 @@ class scrape:
         else:
             self.size = None
 
+    def __clean(self, tempinfo):
+        for temp in tempinfo:
+            temp[0] = temp[0].replace("&quot;", " ").lstrip(' ')
+            temp[0] = temp[0].replace("&amp;", "&")
+            temp[0] = temp[0].replace("/", " ")
+            temp[0] = temp[0].replace(":", " ")
+            if temp[0] == "永田権太":
+                temp[0] = "Kenta Nagata"
+            if temp[0] == "The Scorpions":
+                temp[0] = "Scorpions"
+            if temp[0] == "Vitalis Eirich Stephen Rippy" or temp[0] == "David Rippy, Stephen Rippy":
+                temp[0] = "Stephen Rippy"
+            if temp[0] == "Ludwig Göransson":
+                temp[0] = "Ludwig Goransson"
+            if self.type != 'artists':
+                if temp[0] == "Zack Bower" or temp[0] == "The Rolling Stones" or temp[0] == "Camel":
+                    temp[1] = re.sub(r" ?\([^)]+\)", "", temp[1]).lstrip(' ')
+                if temp[0] == "Dire Straits" and temp[1] == " Romeo and Juliet":
+                    temp[1] = "Romeo & Juliet"
+                temp[1] = temp[1].replace("&amp;", "&")
+                temp[1] = temp[1].replace(":", " ")
+                temp[1] = temp[1].replace("?", " ")
+                temp[1] = temp[1].replace("/", " ")
+                temp[1] = temp[1].replace("&quot;", " ").lstrip(' ')
+                if temp[1] == "The Bridge of Khazad Dum":
+                    temp[1] = "The Bridge of Khazad-Dûm"
+                if temp[1] == "Mary Jane's Last Dance":
+                    temp[0] = "Tom Petty and The Heartbreakers"
+                if temp[1] == "El Mañana":
+                    temp[1] = "El Manana"
+                if temp[1] == "The Monkey Book":
+                    temp[1] = "Pork Parts"
+                if temp[1] == "Andúril":
+                    temp[1] = "Anduril"
+                if temp[1] == "Main Menu" and temp[0] == "Asuka Ohta, Ryo Nagamatsu":
+                    temp[1] = "Title"
+                if temp[1] == "2112  I. Overture   II. The Temples of Syrinx   III. Discovery   IV. Presentation   V. Oracle  the Dream   VI. Soliloquy   VII. Grand Finale":
+                    temp[1] = "2112"
+                if temp[1] == "Welcome Home":
+                    temp[1] = "Welcome Home (Sanitarium)"
+                if temp[1] == "God's Gift":
+                    temp[1] = "Gods Gift"
+
     def __info(self):
         self.url = "https://www.last.fm/user/vishwarrior/library/" + \
             self.type + "?from=" + (self.start) + "&to=" + str(self.end)
@@ -62,6 +105,7 @@ class scrape:
                         test.append([artist, kind, play])
                     else:
                         test.append([unsplit, play])
+        self.__clean(test)
         return test[:self.size]
 
     def setSize(self, size):
@@ -112,3 +156,8 @@ class scrape:
             self.total = int("".join(str(x) for x in re.findall(
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
+
+
+sc = scrape("100", "ALL")
+# print(sc.albumInfo())
+print(sc.trackInfo())

@@ -17,4 +17,4 @@ sc = scrape.scrape("100", "ALL")
 #
 # print(sorted(artists, key=itemgetter(-1), reverse=True))
 
-print(sc.artistCounts())
+sc.artistInfo()
