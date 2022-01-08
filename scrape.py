@@ -13,6 +13,9 @@ class scrape:
         self.start = start
         if start == "TODAY":
             self.start = str(date.today())
+        elif start == "ALL":
+            self.start = "2020-08-02"
+            end = "TODAY"
         if end == "NONE":
             self.end = self.start
         elif end == "TODAY":
