@@ -7,8 +7,8 @@ import math
 import re
 
 # Pulls all info about scrobbles over given time period
-# sc = scrape.scrape("MAX", "2021-01-01", "2021-12-31")
-# tempinfo = sc.trackInfo()
+sc = scrape.scrape("MAX", "ALL")
+tempinfo = sc.trackInfo()
 
 # fields = ["Artist", "Tracks", "Plays"]
 # with open("TopTracksWithTime.csv", 'w', encoding='utf-8',  newline='') as csvfile:
@@ -86,7 +86,7 @@ for temp in tempinfo:  # tempinfo[1:]
 
 # Writes track info to a file
 fields = ["Artist", "Tracks", "Plays", "Time"]
-with open("2021Tracks.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+with open("Tracks.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
     csvwriter.writerows(sorted(tempinfo, key=itemgetter(-1), reverse=True))
@@ -101,7 +101,7 @@ for temper in artists:
 
 # Writes artist info to a file
 fields = ["Artist", "Plays", "Time"]
-with open("2021artists.csv", 'w', encoding='utf-8',  newline='') as csvfile:
+with open("Artists.csv", 'w', encoding='utf-8',  newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(fields)
     csvwriter.writerows(sorted(artists, key=itemgetter(-1), reverse=True))
