@@ -1,5 +1,6 @@
 import scrape
-import csv
 
+sc = scrape.scrape("100", "ALL", "", "cs188")
+print(sc.scrobblesInfo())
 sc = scrape.scrape("100", "ALL")
-print(sc.artistCounts())
+print(sc.scrobblesInfo())
