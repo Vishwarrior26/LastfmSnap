@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import datetime
 from bs4 import BeautifulSoup
 from operator import itemgetter
 import pandas as pd
@@ -8,6 +9,7 @@ import re
 
 
 class scrape:
+
     # Change var names to conform to snake_case
     """" This is the constructor docstring """
 
@@ -17,7 +19,8 @@ class scrape:
         if start == "TODAY":
             self.start = str(date.today())
         elif start == "ALL":
-            self.start = "ALL"
+            self.start = self.__getVeryStart()
+            end = "TODAY"
         if end == "NONE":
             self.end = self.start
         elif end == "TODAY":
@@ -30,13 +33,25 @@ class scrape:
         else:
             self.size = None
 
+    def __getVeryStart(self):
+        self.url = "https://www.last.fm/user/" + self.user + "/library/"
+        req = requests.get(self.url)
+        soup = BeautifulSoup(req.text, "html.parser")
+        description = soup.find_all(class_="pagination-page")
+        self.url += "?page=" + \
+            str(re.findall('[0-9]+', str(description[-1]))[-1])
+        req = requests.get(self.url)
+        soup = BeautifulSoup(req.text, "html.parser")
+        description = soup.find_all(class_="date-heading")
+        pieces = str(description[-1])[25:-5].split(" ")
+        month = f"{datetime.datetime.strptime(pieces[2], '%B').month:02}"
+        day = f"{int(pieces[1]):02}"
+        year = pieces[3]
+        return year + "-" + month + "-" + day
+
     def __info(self):
-        if self.start == "ALL":
-            self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
-                self.type
-        else:
-            self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
-                self.type + "?from=" + (self.start) + "&to=" + str(self.end)
+        self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
+            self.type + "?from=" + (self.start) + "&to=" + str(self.end)
         urls = [self.url]
         if self.size is None:
             req = requests.get(self.url)
@@ -112,11 +127,8 @@ class scrape:
         return sorted(artists, key=itemgetter(-1), reverse=True)
 
     def scrobblesInfo(self):
-        if self.start == "ALL":
-            self.url = "https://www.last.fm/user/" + self.user + "/library"
-        else:
-            self.url = "https://www.last.fm/user/" + self.user + "/library?from=" + \
-                str(self.start) + "&to=" + str(self.end)
+        self.url = "https://www.last.fm/user/" + self.user + "/library?from=" + \
+            str(self.start) + "&to=" + str(self.end)
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
         description = soup.find_all(class_="metadata-display")
@@ -125,3 +137,6 @@ class scrape:
             self.total = int("".join(str(x) for x in re.findall(
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
+
+    # def dailyArtists(self):
+    #     for day in pd.date_range(start=self.start, end=self.end):
