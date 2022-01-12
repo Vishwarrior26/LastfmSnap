@@ -44,7 +44,9 @@ while not done:
         print("End date (Date or TODAY):")
         end = input()
         sc.setTime(start, end)
+    elif type == "dailyartists":
+        print(sc.dailyArtists())
     # elif type == "export":
-        # TODO Add function to export to CSV in scrape
+    # TODO Add function to export to CSV in scrape
     else:
         print("Couldn't parse input; try typing in lowercase without spaces")

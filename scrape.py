@@ -85,6 +85,7 @@ class scrape:
         if start == "TODAY":
             self.start = str(date.today())
         elif start == "ALL":
+            self.all = True
             self.start = self.__getVeryStart()
             end = "TODAY"
         if end == "NONE":
@@ -96,6 +97,11 @@ class scrape:
 
     def setUser(self, user):
         self.user = user
+        try:
+            if self.all == True:
+                self.setTime("ALL", self.end)
+        except:
+            pass
 
     def artistInfo(self):
         self.type = 'artists'
@@ -133,5 +139,10 @@ class scrape:
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
 
-    # def dailyArtists(self):
-    #     for day in pd.date_range(start=self.start, end=self.end):
+    def dailyArtists(self):
+        results = []
+        for day in pd.date_range(start=self.start, end=self.end):
+            curday = str(day.date())
+            self.setTime(curday)
+            results.append([curday, self.artistInfo()])
+        return results
