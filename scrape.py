@@ -81,6 +81,9 @@ class scrape:
         else:
             self.end = end
 
+    def setUser(self, user):
+        self.user = user
+
     def artistInfo(self):
         self.type = 'artists'
         return self.__info()
