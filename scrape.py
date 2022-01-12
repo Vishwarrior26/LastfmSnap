@@ -17,8 +17,7 @@ class scrape:
         if start == "TODAY":
             self.start = str(date.today())
         elif start == "ALL":
-            self.start = "2020-08-02"
-            end = "TODAY"
+            self.start = "ALL"
         if end == "NONE":
             self.end = self.start
         elif end == "TODAY":
@@ -32,8 +31,12 @@ class scrape:
             self.size = None
 
     def __info(self):
-        self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
-            self.type + "?from=" + (self.start) + "&to=" + str(self.end)
+        if self.start == "ALL":
+            self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
+                self.type
+        else:
+            self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
+                self.type + "?from=" + (self.start) + "&to=" + str(self.end)
         urls = [self.url]
         if self.size is None:
             req = requests.get(self.url)
@@ -109,8 +112,11 @@ class scrape:
         return sorted(artists, key=itemgetter(-1), reverse=True)
 
     def scrobblesInfo(self):
-        self.url = "https://www.last.fm/user/" + self.user + "/library?from=" + \
-            str(self.start) + "&to=" + str(self.end)
+        if self.start == "ALL":
+            self.url = "https://www.last.fm/user/" + self.user + "/library"
+        else:
+            self.url = "https://www.last.fm/user/" + self.user + "/library?from=" + \
+                str(self.start) + "&to=" + str(self.end)
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
         description = soup.find_all(class_="metadata-display")
