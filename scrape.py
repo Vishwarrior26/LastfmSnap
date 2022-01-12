@@ -14,24 +14,9 @@ class scrape:
     """" This is the constructor docstring """
 
     def __init__(self, size=50, start="TODAY", end="NONE", user="vishwarrior"):
-        self.user = user
-        self.start = start
-        if start == "TODAY":
-            self.start = str(date.today())
-        elif start == "ALL":
-            self.start = self.__getVeryStart()
-            end = "TODAY"
-        if end == "NONE":
-            self.end = self.start
-        elif end == "TODAY":
-            self.end = str(date.today())
-        else:
-            self.end = end
-        if size != "MAX":
-            self.size = int(size)
-            self.pages = int(math.ceil(self.size / 50))
-        else:
-            self.size = None
+        self.setUser(user)
+        self.setTime(start, end)
+        self.setSize(size)
 
     def __getVeryStart(self):
         self.url = "https://www.last.fm/user/" + self.user + "/library/"
@@ -89,13 +74,23 @@ class scrape:
         return info[:self.size]
 
     def setSize(self, size):
-        self.size = size
-        self.pages = int(math.ceil(self.size / 50))
+        if size != "MAX":
+            self.size = int(size)
+            self.pages = int(math.ceil(self.size / 50))
+        else:
+            self.size = None
 
     def setTime(self, start, end="NONE"):
         self.start = start
+        if start == "TODAY":
+            self.start = str(date.today())
+        elif start == "ALL":
+            self.start = self.__getVeryStart()
+            end = "TODAY"
         if end == "NONE":
-            self.end = start
+            self.end = self.start
+        elif end == "TODAY":
+            self.end = str(date.today())
         else:
             self.end = end
 
