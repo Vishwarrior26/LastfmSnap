@@ -46,6 +46,10 @@ while not done:
         sc.setTime(start, end)
     elif type == "dailyartists":
         print(sc.dailyArtists())
+    elif type == "dailyalbum":
+        print(sc.dailyAlbums())
+    elif type == "dailytracks":
+        print(sc.dailyTracks())
     # elif type == "export":
     # TODO Add function to export to CSV in scrape
     else:
