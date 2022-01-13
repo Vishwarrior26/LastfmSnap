@@ -139,10 +139,22 @@ class scrape:
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
 
-    def dailyArtists(self):
+    def __dailyInfo(self, info):
         results = []
+        origStart = self.start
+        origEnd = self.end
         for day in pd.date_range(start=self.start, end=self.end):
             curday = str(day.date())
             self.setTime(curday)
-            results.append([curday, self.artistInfo()])
+            results.append([curday, info()])
+        self.setTime(origStart, origEnd)
         return results
+
+    def dailyArtists(self):
+        return self.__dailyInfo(self.artistInfo)
+
+    def dailyAlbums(self):
+        return self.__dailyInfo(self.albumInfo)
+
+    def dailyTracks(self):
+        return self.__dailyInfo(self.trackInfo)
