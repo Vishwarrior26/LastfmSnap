@@ -6,6 +6,7 @@ import pandas as pd
 import math
 import requests
 import re
+import unidecode
 
 
 class scrape:
@@ -69,6 +70,8 @@ class scrape:
         for temp in info:
             temp[0] = temp[0].replace("&quot;", " ").lstrip(' ')
             temp[0] = temp[0].replace("&amp;", "&")
+            temp[0] = unidecode.unidecode(temp[0])
+            temp[-2] = unidecode.unidecode(temp[-2])
             temp[-2] = temp[-2].replace("&amp;", "&")
             temp[-2] = temp[-2].replace("&quot;", " ").lstrip(' ')
         return info[:self.size]
@@ -158,3 +161,46 @@ class scrape:
 
     def dailyTracks(self):
         return self.__dailyInfo(self.trackInfo)
+
+# Rewrite using passable method?
+    def __specInfo(self, info, func):
+        results = []
+        for x in self.func():
+            if x[0].lower() == info.lower():
+                results.append(x)
+        return results
+
+    def specArtist(self, artist):
+        results = []
+        for x in self.artistInfo():
+            if x[0].lower() == artist.lower():
+                results.append(x)
+        return results
+
+    def specAlbum(self, album):
+        results = []
+        for x in self.albumInfo():
+            if x[-2].lower() == album.lower():
+                results.append(x)
+        return results
+
+    def specAlbumArtist(self, artist):
+        results = []
+        for x in self.albumInfo():
+            if x[0].lower() == artist.lower():
+                results.append(x)
+        return results
+
+    def specTrack(self, track):
+        results = []
+        for x in self.trackInfo():
+            if x[-2].lower() == track.lower():
+                results.append(x)
+        return results
+
+    def specTrackArtist(self, artist):
+        results = []
+        for x in self.trackInfo():
+            if x[0].lower() == artist.lower():
+                results.append(x)
+        return results
