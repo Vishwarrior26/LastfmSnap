@@ -8,6 +8,9 @@ import requests
 import re
 import unidecode
 
+"""
+"""
+
 
 class scrape:
     # TODO Delete user default
@@ -20,6 +23,7 @@ class scrape:
             start (str): Start date for the query in YYYY-MM-DD format.
             end (str): End date for the query in the same format.
             user (str): last.fm user to make the query upon.
+
         """
         self.setUser(user)
         self.setTime(start, end)
@@ -34,6 +38,7 @@ class scrape:
 
         Returns:
             list: Contains 'size' number of entries about type.
+
         """
         # Builds first url to scrape for
         self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
@@ -107,6 +112,7 @@ class scrape:
 
         Parameters:
             size (int): Number of queries to return.
+
         """
         if size != "MAX":
             self.size = int(size)
@@ -119,6 +125,7 @@ class scrape:
 
         Returns:
             str: First date of scrobbling on a last.fm account, in YYYY-MM-DD format.
+
         """
         self.url = "https://www.last.fm/user/" + \
             self.user + "/library/"  # Builds URL to scrape
@@ -143,11 +150,12 @@ class scrape:
 
     def setTime(self, start, end="NONE"):
         """
-        Sets the date range which the query is run on; supports some special arguements such as TODAY, which sets the date to the current day, ALL, which finds the earliest day using the aformentioned __getVeryStart function, and then sets the end to TODAY. If an end isn't given, it defaults to the start date, this is the default value as well.
+        Sets the date range which the query is run on; supports some special arguements such as TODAY, which sets the date to the current day, ALL, which finds the earliest day using the getVeryStart() function, and then sets the end to TODAY. If an end isn't given, it defaults to the start date, this is the default value as well.
 
         Parameters:
             start (str): Start date of timeframe.
             end (str): End date of timeframe.
+
         """
         self.start = start
         self.end = end
@@ -170,6 +178,7 @@ class scrape:
 
         Parameters:
             user (str): User to scrape information from.
+
         """
         self.user = user
         try:
@@ -201,6 +210,7 @@ class scrape:
 
         Returns:
             list: List of total of counts of artists from either albums/tracks in the timeframe.
+
         """
         artists = []
         # Goes through the info list of each type and then sums the counts of each artist, sorted by count
@@ -230,6 +240,7 @@ class scrape:
             type (str): type of info to get counts. If blank, finds scrobbles over timeframe.
         Returns:
             str: Either the number of scrobbles, or the number of unique artist, albums or tracks in the timeframe.
+
         """
         # Builds URL to scrape
         self.url = "https://www.last.fm/user/" + self.user + "/library" + type + "?from=" + \
@@ -269,9 +280,9 @@ class scrape:
 
         Returns:
             list: Information for every date in the timeframe about the requested type.
+
         """
         results = []
-        # Save original dates
         origStart = self.start
         origEnd = self.end
         # Go through every day in the timeframe
@@ -281,7 +292,7 @@ class scrape:
             self.setTime(curday)
             # Add the date and the info to the info list
             results.append([curday, info()])
-        # Reset the time
+        # Reset the timeframe
         self.setTime(origStart, origEnd)
         return results
 
@@ -300,28 +311,50 @@ class scrape:
     def dailyScrobbles(self):
         """ Get daily info about scrobbles. """
         return self.__dailyInfo(self.scrobbleCounts)
+    # Perhaps copying, sorting, then binary seaching is a viable, more efficient option?
 
     def __specInfo(self, search, info, index=0):
+        """
+        Searches for a specific entry in the info list in the given timeframe.
+
+        Parameters:
+            serach (str): Item to search for.
+            info (str): Where to search for item; artists, albums, tracks, etc.
+            index (int): Information to pull from matching results.
+
+        Returns:
+            list: List of all matching results.
+
+        """
         results = []
         origSize = self.size
         self.setSize("MAX")
+        # Get all info in the timeframe
         for x in info():
             if x[index].lower() == search.lower():
+                # Add matching results
                 results.append(x)
         self.setSize(origSize)
+        if len(results) == 0:
+            results.append("No matches found; check spelling and such.")
         return results
 
     def specArtist(self, artist):
+        """ Finds info about the specified artist. """
         return self.__specInfo(artist, self.artistInfo)
 
     def specAlbum(self, album):
+        """ Finds info about the specified album. """
         return self.__specInfo(album, self.albumInfo, -2)
 
     def specAlbumArtist(self, artist):
+        """ Finds info about albums by the specified artist. """
         return self.__specInfo(artist, self.albumInfo)
 
     def specTrack(self, track):
+        """ Finds info about the specified track. """
         return self.__specInfo(track, self.trackInfo, -2)
 
     def specTrackArtist(self, artist):
+        """ Finds info about tracks by the specified artist. """
         return self.__specInfo(artist, self.trackInfo)
