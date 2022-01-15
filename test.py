@@ -2,10 +2,10 @@ import scrape
 
 # sc = scrape.scrape("100", "ALL", "", "cs188")
 # print(sc.scrobblesInfo())
-sc = scrape.scrape("MAX", "ALL")
+# sc = scrape.scrape("MAX", "ALL")
 # print(sc.scrobblesInfo())
 
-# sc = scrape.scrape("2", "2022-01-01", "TODAY")
+sc = scrape.scrape("2", "2022-01-01", "TODAY")
 
 # print(sc.trackInfo())
 # print(sc.dailyArtists())

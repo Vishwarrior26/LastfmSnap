@@ -35,15 +35,19 @@ class scrape:
         year = pieces[3]
         return year + "-" + month + "-" + day
 
-    def __info(self):
+    def __info(self, type):
         self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
-            self.type + "?from=" + (self.start) + "&to=" + str(self.end)
+            type + "?from=" + self.start + "&to=" + self.end
         urls = [self.url]
         if self.size is None:
             req = requests.get(self.url)
             soup = BeautifulSoup(req.text, "html.parser")
             description = soup.find_all(class_="pagination-page")
-            self.pages = int(re.findall('[0-9]+', str(description[-1]))[-1])
+            try:
+                self.pages = int(re.findall(
+                    '[0-9]+', str(description[-1]))[-1])
+            except:
+                self.pages = 1
         for x in range(2, self.pages + 1):
             urls.append(self.url + "&page=" + str(x))
         info = []
@@ -53,14 +57,19 @@ class scrape:
             description = soup.find_all("meta", property="og:description")
             if len(description) > 1:
                 temp = str(description[1])
-                init = temp.find('"') + 1
-                fini = temp.find('"', init + 1)
+                # Use Regex to find artist that has quotes in it?
+                if '"Weird Al"' in temp:
+                    init = temp.find("content='") + 9
+                    fini = temp.find("' property", init + 1)
+                else:
+                    init = temp.find('content="') + 9
+                    fini = temp.find('" property', init + 1)
                 templist = temp[init:fini].split("), ")
                 templist[-1] = templist[-1][:-1]
                 for temper in templist:
                     play = int(temper.split(" ")[-1][1:])
                     unsplit = temper[:temper.find(str(play)) - 2]
-                    if self.type != 'artists':
+                    if type != 'artists':
                         splitter = unsplit.find('—')
                         artist = unsplit[:splitter - 1]
                         kind = unsplit[splitter + 2:]
@@ -107,16 +116,13 @@ class scrape:
             pass
 
     def artistInfo(self):
-        self.type = 'artists'
-        return self.__info()
+        return self.__info('artists')
 
     def albumInfo(self):
-        self.type = 'albums'
-        return self.__info()
+        return self.__info('albums')
 
     def trackInfo(self):
-        self.type = 'tracks'
-        return self.__info()
+        return self.__info('tracks')
 
     def artistCounts(self):
         artists = []
@@ -162,45 +168,27 @@ class scrape:
     def dailyTracks(self):
         return self.__dailyInfo(self.trackInfo)
 
-# Rewrite using passable method?
-    def __specInfo(self, info, func):
+    def __specInfo(self, search, info, index=0):
         results = []
-        for x in self.func():
-            if x[0].lower() == info.lower():
+        origSize = self.size
+        self.setSize("MAX")
+        for x in info():
+            if x[index].lower() == search.lower():
                 results.append(x)
+        self.setSize(origSize)
         return results
 
     def specArtist(self, artist):
-        results = []
-        for x in self.artistInfo():
-            if x[0].lower() == artist.lower():
-                results.append(x)
-        return results
+        return self.__specInfo(artist, self.artistInfo)
 
     def specAlbum(self, album):
-        results = []
-        for x in self.albumInfo():
-            if x[-2].lower() == album.lower():
-                results.append(x)
-        return results
+        return self.__specInfo(album, self.albumInfo, -2)
 
     def specAlbumArtist(self, artist):
-        results = []
-        for x in self.albumInfo():
-            if x[0].lower() == artist.lower():
-                results.append(x)
-        return results
+        return self.__specInfo(artist, self.albumInfo)
 
     def specTrack(self, track):
-        results = []
-        for x in self.trackInfo():
-            if x[-2].lower() == track.lower():
-                results.append(x)
-        return results
+        return self.__specInfo(track, self.trackInfo, -2)
 
     def specTrackArtist(self, artist):
-        results = []
-        for x in self.trackInfo():
-            if x[0].lower() == artist.lower():
-                results.append(x)
-        return results
+        return self.__specInfo(artist, self.trackInfo)
