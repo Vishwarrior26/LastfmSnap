@@ -10,10 +10,12 @@ import unidecode
 
 
 class scrape:
-
+    # TODO Delete user default
     def __init__(self, size=50, start="TODAY", end="NONE", user="vishwarrior"):
         '''
         Makes a scrape object and sets some default paramters
+
+        Defaults to size of 50 (1 page), start date as current date and end date also as curent date
 
         Paramters:
         size (int): Determines the number of entries to be returned per query
@@ -26,26 +28,53 @@ class scrape:
         self.setSize(size)
 
     def __getVeryStart(self):
-        self.url = "https://www.last.fm/user/" + self.user + "/library/"
+        '''
+        Gets first scrobble date
+
+        Gets the date of the first scrobbles of given last.fm account; used for MAX calculation
+
+        Returns:
+        str: First date of scrobbling on a last.fm account, in YYYY-MM-DD format
+        '''
+        self.url = "https://www.last.fm/user/" + \
+            self.user + "/library/"  # Builds URL to scrape
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
         description = soup.find_all(class_="pagination-page")
         self.url += "?page=" + \
-            str(re.findall('[0-9]+', str(description[-1]))[-1])
+            str(re.findall('[0-9]+', str(description[-1]))[-1]
+                )  # Finds last page of last.fm account scrobbles
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
+        # Potential edge case where the first scrobbling date has too many scrobbles so that the date header is on the previous page?
+        # Gets all dates on the last scrobble date
         description = soup.find_all(class_="date-heading")
+        # Get all the proponents of the last date found on the page
         pieces = str(description[-1])[25:-5].split(" ")
         month = f"{datetime.datetime.strptime(pieces[2], '%B').month:02}"
         day = f"{int(pieces[1]):02}"
         year = pieces[3]
+        # Convert date to format to use in scraping
         return year + "-" + month + "-" + day
 
     def __info(self, type):
+        '''
+        The fundemental function of scrape
+
+        Scrapes information on a given user during the given timeframe
+
+        Paramters:
+        type (str): Type of information wanted, viz. artists, albums, or tracks
+
+        Returns:
+        list: Contains 'size' number of entries about
+        '''
+        # Builds first url to scrape for
         self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
             type + "?from=" + self.start + "&to=" + self.end
         urls = [self.url]
-        if self.size is None:
+        #
+        if self.size == "MAX":
             req = requests.get(self.url)
             soup = BeautifulSoup(req.text, "html.parser")
             description = soup.find_all(class_="pagination-page")
@@ -95,8 +124,6 @@ class scrape:
         if size != "MAX":
             self.size = int(size)
             self.pages = int(math.ceil(self.size / 50))
-        else:
-            self.size = None
 
     def setTime(self, start, end="NONE"):
         self.start = start
@@ -130,9 +157,9 @@ class scrape:
     def trackInfo(self):
         return self.__info('tracks')
 
-    def artistCounts(self):
+    def __artistCountsPerType(self, type):
         artists = []
-        for temp in self.trackInfo():
+        for temp in type():
             artist = temp[0]
             if artist not in (row[0] for row in artists):
                 artists.append([artist, 1])
@@ -142,8 +169,14 @@ class scrape:
                         row[-1] += 1
         return sorted(artists, key=itemgetter(-1), reverse=True)
 
-    def scrobblesInfo(self):
-        self.url = "https://www.last.fm/user/" + self.user + "/library?from=" + \
+    def artistCountsPerAlbum(self):
+        return self.__artistCountsPerType(self.albumInfo)
+
+    def artistCountsPerTrack(self):
+        return self.__artistCountsPerType(self.trackInfo)
+
+    def __metaInfo(self, type):
+        self.url = "https://www.last.fm/user/" + self.user + "/library" + type + "?from=" + \
             str(self.start) + "&to=" + str(self.end)
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
@@ -153,6 +186,18 @@ class scrape:
             self.total = int("".join(str(x) for x in re.findall(
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
+
+    def scrobbles(self):
+        return self.__metaInfo("")
+
+    def artistCounts(self):
+        return self.__metaInfo("/artists")
+
+    def albumCounts(self):
+        return self.__metaInfo("/albums")
+
+    def trackCounts(self):
+        return self.__metaInfo("/tracks")
 
     def __dailyInfo(self, info):
         results = []
