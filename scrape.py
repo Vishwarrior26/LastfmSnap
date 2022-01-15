@@ -11,10 +11,16 @@ import unidecode
 
 class scrape:
 
-    # Change var names to conform to snake_case
-    """" This is the constructor docstring """
-
     def __init__(self, size=50, start="TODAY", end="NONE", user="vishwarrior"):
+        '''
+        Makes a scrape object and sets some default paramters
+
+        Paramters:
+        size (int): Determines the number of entries to be returned per query
+        start (str): Start date for the query in YYYY-MM-DD format
+        end (str): End date for the query in the same format
+        user (str): last.fm user to make the query upon
+        '''
         self.setUser(user)
         self.setTime(start, end)
         self.setSize(size)
