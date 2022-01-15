@@ -319,13 +319,14 @@ class scrape:
         return self.__dailyInfo(self.scrobbleCounts)
 
     # NOTE: Perhaps copying, sorting, then binary seaching is a viable, more efficient option?
-    def __specInfo(self, search, info, index=0):
+    def __specInfo(self, search, info, strict, index=0):
         """
         Searches for a specific entry in the info list in the given timeframe.
 
         Parameters:
             serach (str): Item to search for.
             info (str): Where to search for item; artists, albums, tracks, etc.
+            strict (bool): Determines if the size should be respected or not.
             index (int): Information to pull from matching results.
 
         Returns:
@@ -334,7 +335,8 @@ class scrape:
         """
         results = []
         origSize = self.size
-        self.setSize("MAX")
+        if strict != True:
+            self.setSize("MAX")
         # Get all info in the timeframe
         for x in info():
             if x[index].lower() == search.lower():
@@ -345,22 +347,22 @@ class scrape:
             results.append("No matches found; check spelling and such.")
         return results
 
-    def specArtist(self, artist):
+    def specArtist(self, artist, strict=True):
         """ Finds info about the specified artist. """
-        return self.__specInfo(artist, self.artistInfo)
+        return self.__specInfo(artist, self.artistInfo, strict)
 
-    def specAlbum(self, album):
+    def specAlbum(self, album, strict=True):
         """ Finds info about the specified album. """
-        return self.__specInfo(album, self.albumInfo, -2)
+        return self.__specInfo(album, self.albumInfo, strict, -2)
 
-    def specAlbumArtist(self, artist):
+    def specAlbumArtist(self, artist, strict=True):
         """ Finds info about albums by the specified artist. """
-        return self.__specInfo(artist, self.albumInfo)
+        return self.__specInfo(artist, self.albumInfo, strict)
 
-    def specTrack(self, track):
+    def specTrack(self, track, strict=True):
         """ Finds info about the specified track. """
-        return self.__specInfo(track, self.trackInfo, -2)
+        return self.__specInfo(track, self.trackInfo, strict, -2)
 
-    def specTrackArtist(self, artist):
+    def specTrackArtist(self, artist, strict=True):
         """ Finds info about tracks by the specified artist. """
-        return self.__specInfo(artist, self.trackInfo)
+        return self.__specInfo(artist, self.trackInfo, strict)
