@@ -1,3 +1,4 @@
+# TODO: Manage imports
 from datetime import date, datetime
 import datetime
 from bs4 import BeautifulSoup
@@ -8,12 +9,13 @@ import requests
 import re
 import unidecode
 
+# TODO: Write class docstring
 """
 """
 
 
 class scrape:
-    # TODO Delete user default
+    # TODO Delete user default?
     def __init__(self, size=50, start="TODAY", end="NONE", user="vishwarrior"):
         """
         Makes a scrape object and sets some default Parameters; Defaults to size of 50 (1 page), start date as current date and end date also as curent date.
@@ -44,7 +46,7 @@ class scrape:
         self.url = "https://www.last.fm/user/" + self.user + "/library/" + \
             type + "?from=" + self.start + "&to=" + self.end
         urls = [self.url]
-        # Determines the number of pages if MAX
+        # Calculate the number of pages if size is MAX
         if self.size == "MAX":
             req = requests.get(self.url)
             soup = BeautifulSoup(req.text, "html.parser")
@@ -68,7 +70,7 @@ class scrape:
             description = soup.find_all("meta", property="og:description")
             if len(description) > 1:
                 html = str(description[1])
-                # Use Regex to find artist that has quotes in it?
+                # NOTE: Use Regex to find artist that has quotes in it?
                 # Deal with finding the list if an artist/album(?)/track(?) name has double quotes; changes from double to single quotes
                 if '"Weird Al"' in html:
                     init = html.find("content='") + 9
@@ -137,7 +139,7 @@ class scrape:
                 )  # Finds last page of last.fm account scrobbles
         req = requests.get(self.url)
         soup = BeautifulSoup(req.text, "html.parser")
-        # Potential edge case where the first scrobbling date has too many scrobbles so that the date header is on the previous page?
+        # NOTE: Potential edge case where the first scrobbling date has too many scrobbles so that the date header is on the previous page?
         # Gets all dates on the last scrobble date
         description = soup.find_all(class_="date-heading")
         # Get all the proponents of the last date found on the page
@@ -162,6 +164,7 @@ class scrape:
         if start == "TODAY":
             self.start = str(date.today())
         elif start == "ALL" or end == "ALL":
+            # Maintain ALL integrity when swapping users; see setUser()
             self.all = True
             self.start = self.__getVeryStart()
             end = "TODAY"
@@ -199,7 +202,7 @@ class scrape:
     def trackInfo(self):
         """ Gets info about tracks, artists for each track, & their scrobbles. See info() for more details. """
         return self.__info('tracks')
-# Rewrite docstring to be coherent later
+# TODO: Rewrite docstring to be coherent later
 
     def __artistCountsPerType(self, type):
         """
@@ -242,7 +245,6 @@ class scrape:
             str: Either the number of scrobbles, or the number of unique artist, albums or tracks in the timeframe.
 
         """
-        # Builds URL to scrape
         self.url = "https://www.last.fm/user/" + self.user + "/library" + type + "?from=" + \
             str(self.start) + "&to=" + str(self.end)
         req = requests.get(self.url)
@@ -250,7 +252,7 @@ class scrape:
         description = soup.find_all(class_="metadata-display")
         if len(description) > 0:
             temp = str(description[0])
-            # Gets the info through a regex search numbers
+            # Gets the info through a regex search for numbers
             self.total = int("".join(str(x) for x in re.findall(
                 "[0-9]", temp[temp.find(">") + 1:temp.find("<", 1)])))
             return self.total
@@ -311,8 +313,8 @@ class scrape:
     def dailyScrobbles(self):
         """ Get daily info about scrobbles. """
         return self.__dailyInfo(self.scrobbleCounts)
-    # Perhaps copying, sorting, then binary seaching is a viable, more efficient option?
 
+    # NOTE: Perhaps copying, sorting, then binary seaching is a viable, more efficient option?
     def __specInfo(self, search, info, index=0):
         """
         Searches for a specific entry in the info list in the given timeframe.

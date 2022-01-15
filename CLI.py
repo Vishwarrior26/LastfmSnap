@@ -1,5 +1,5 @@
 import scrape
-# Need to update funciton calls; new names and new functions
+# TODO Need to update funciton calls; new names and new functions
 print("Enter your last.fm username")
 user = input()
 print("Enter the date range you would like to get info about (YYYY-MM-DD) \nStart date:")
