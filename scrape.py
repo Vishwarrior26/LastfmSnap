@@ -13,6 +13,8 @@ import unidecode
 """
 """
 
+# TODO: Export and graphs?
+
 
 class scrape:
     # TODO Delete user default?
@@ -33,7 +35,7 @@ class scrape:
 
     def __info(self, type):
         """
-        The fundemental function of Scape. Gets information on a given user during the given timeframe.
+        The fundemental method of Scape. Gets information on a given user during the given timeframe.
 
         Parameters:
             type (str): Type of information wanted, viz. artists, albums, or tracks.
@@ -47,7 +49,7 @@ class scrape:
             type + "?from=" + self.start + "&to=" + self.end
         urls = [self.url]
         # Calculate the number of pages if size is MAX
-        if self.size == "MAX":
+        if self.size == None:
             req = requests.get(self.url)
             soup = BeautifulSoup(req.text, "html.parser")
             description = soup.find_all(class_="pagination-page")
@@ -116,7 +118,9 @@ class scrape:
             size (int): Number of queries to return.
 
         """
-        if size != "MAX":
+        if size == "MAX" or size == None:
+            self.size = None
+        else:
             self.size = int(size)
             # Finds the number of pages by determing how many 50s are needed to return the given number of entries
             self.pages = int(math.ceil(self.size / 50))
@@ -152,7 +156,7 @@ class scrape:
 
     def setTime(self, start, end="NONE"):
         """
-        Sets the date range which the query is run on; supports some special arguements such as TODAY, which sets the date to the current day, ALL, which finds the earliest day using the getVeryStart() function, and then sets the end to TODAY. If an end isn't given, it defaults to the start date, this is the default value as well.
+        Sets the date range which the query is run on; supports some special arguements such as TODAY, which sets the date to the current day, ALL, which finds the earliest day using the getVeryStart() method, and then sets the end to TODAY. If an end isn't given, it defaults to the start date, this is the default value as well.
 
         Parameters:
             start (str): Start date of timeframe.
@@ -209,7 +213,7 @@ class scrape:
         Gets the number of albums/tracks which have the same artists.
 
         Parameters:
-            type (function): Function to run to get artist counts; can be albumInfo or trackInfo.
+            type (method): Method to run to get artist counts; can be albumInfo or trackInfo.
 
         Returns:
             list: List of total of counts of artists from either albums/tracks in the timeframe.
@@ -278,7 +282,7 @@ class scrape:
         Gets info about entries for each day in the sepcified time period, inclusive. Uses info(), so see that for more details.
 
         Parameters:
-            info (function): Type of info to get, either artist, album, or track, using their respective functions.
+            info (method): Type of info to get, either artist, album, or track, using their respective methods.
 
         Returns:
             list: Information for every date in the timeframe about the requested type.

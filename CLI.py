@@ -50,7 +50,5 @@ while not done:
         print(sc.dailyAlbums())
     elif type == "dailytracks":
         print(sc.dailyTracks())
-    # elif type == "export":
-    # TODO Add function to export to CSV in scrape
     else:
         print("Couldn't parse input; try typing in lowercase without spaces")
