@@ -50,6 +50,7 @@ class scrape:
         urls = [self.url]
         # Calculate the number of pages if size is MAX
         if self.size == None:
+            # NOTE: Make this a method call instead? Used in getVeryStart as well
             req = requests.get(self.url)
             soup = BeautifulSoup(req.text, "html.parser")
             description = soup.find_all(class_="pagination-page")
