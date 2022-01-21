@@ -14,6 +14,7 @@ import unidecode
 """
 
 # TODO: Export and graphs?
+# TODO: Add more time period options, eg. WEEK(past week), MONTH, & YEAR. Expand dailyinfos scope to include these other time period?
 
 
 class scrape:
