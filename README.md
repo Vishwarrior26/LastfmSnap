@@ -1,6 +1,6 @@
 # LastfmSnap
 
-LastfmSnap is a project designed to give last.fm users fine access to their data by helping them access snapshots of their listneing history. The project is built using Python, and though there is a basic CLI, it isn't fully functional yet. A fully functional CLI is definetly a goal, and some other goals include a GUI, more time options, graphs, export to CSV/TXT, & perhaps even a webpage.
+LastfmSnap is a project designed to give last.fm users fine access to their data by helping them access snapshots of their listening history. The project is built using Python, and though there is a basic CLI, it isn't fully functional yet. A fully functional CLI is definetly a goal, and some other goals include a GUI, more time options, graphs, export to CSV/TXT, & perhaps even a webpage.
 
 ## Usage
 
