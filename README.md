@@ -4,7 +4,7 @@ MusicScrape is a project designed to give last.fm users fine access to their dat
 
 ## Usage
 
-While you *could* just run `CLI.py`, it isn't fully functional, and so it is highly reccomended to import `scrape.py` and make queries using a scrape object, as seen in `test.py`. Try it! Go run `test.py`!
+While you *could* just run `cli.py`, it isn't fully functional, and so it is highly reccomended to import `scrape.py` and make queries using a scrape object, as seen in `test.py`. Try it! Go run `test.py`!
 
 ```
 import  scrape
