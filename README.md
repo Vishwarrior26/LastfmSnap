@@ -1,6 +1,6 @@
 # MusicScrape
 
-MusicScrape is a project designed to give last.fm users have fine access to their data. The current project is pure Python, and though there is a basic CLI, it isn't fully functional yet. A fully functional CLI is definetly a goal, and some other goals include a GUI, more time options, graphs, export to CSV/TXT, & perhaps even a webpage.
+MusicScrape is a project designed to give last.fm users fine access to their data. The current project is pure Python, and though there is a basic CLI, it isn't fully functional yet. A fully functional CLI is definetly a goal, and some other goals include a GUI, more time options, graphs, export to CSV/TXT, & perhaps even a webpage.
 
 ## Usage
 
