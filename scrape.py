@@ -18,15 +18,14 @@ import unidecode
 
 
 class scrape:
-    # TODO Delete user default?
     def __init__(self, size=50, start="TODAY", end="NONE", user="vishwarrior"):
         """
         Makes a scrape object and sets some default Parameters; Defaults to size of 50 (1 page), start date as current dgate and end date also as curent date.
 
         Parameters:
-            size (int): Determines the number of entries to be returned per query.
-            start (str): Start date for the query in YYYY-MM-DD format.
-            end (str): End date for the query in the same format.
+            size (int): Determines the number of entries to be returned per query. See setSize() for special arguements.
+            start (str): Start date for the query in YYYY-MM-DD format. See setTime() for special arguements.
+            end (str): End date for the query in the same format. See setTime() for special arguements.
             user (str): last.fm user to make the query upon.
 
         """
