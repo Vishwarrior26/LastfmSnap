@@ -17,12 +17,17 @@ Return DataFrame as CSV?
 =#
 
 
-print("Enter your username: \n")
-username::String = "vishwarrior" # strip(readline())
+"""
+    getXML(username::String, page::Integer)
 
-function getXML(username::String)
+Gets XML response from Lastfm API for given username. Gets 200 tracks per page for processing.
+
+Username should be well formatted, without leading or trailing whitespaces or anything of the kind.
+"""
+function getXML(username::String, page::Integer)
+    baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=200&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
     try
-        r = HTTP.get(baseUrl * username)
+        r = HTTP.get(baseUrl * username * "&page=" * page)
         xdoc = parse_string(String(r.body))
         return xdoc
     catch e
@@ -31,14 +36,7 @@ function getXML(username::String)
     end
 end
 
-# Function for pages beyond 1
-getXML(username::String, page::Integer) = getXML(username * "&page=" * page)
-
-xdoc = getXML(username)
-xroot = root(xdoc)
-
-tracks = collect(child_elements(collect(child_elements(xroot))[1]))
-
+# TODO Delete?
 function parseTrackXMLElement(track)
     dateTime = parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM")
     trackTitle = content(find_element(track, "name"))
@@ -47,6 +45,7 @@ function parseTrackXMLElement(track)
     return fill(dateTime, trackTitle, album, artist)
 end
 
+# TODO Delete?
 function parseXMLPage(tracks)
     init = 1
     if has_attribute(tracks[1], "nowplaying")
@@ -60,9 +59,32 @@ end
 
 Gets lastfm data for 'username' from startDateTime to endDateTime.
 
-If either is out of bounds, goes to nearest possible value.
+Assumes both values are in bounds (user has scrobbles in time frame)
 """
 function getLastfmData(username::String, startDateTime::DateTime, endDateTime::DateTime)
-    const baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=200&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
+    startDateTime < endDateTime ? nothing : startDateTime, endDateTime = endDateTime, startDateTime
+    page = 1
 
+    xdoc = getXML(username, page)
+    tracks::Vector{XMLElement} = collect(child_elements(collect(child_elements(root(xdoc)))[1]))
+    free(xdoc)
+    if has_attribute(tracks[1], "nowplaying")
+        popfirst!(tracks)
+    end
+
+    earliestTrackDate::DateTime = parseTrackXMLElement(tracks[end])[1]
+    while earliestTrackDate > startDateTime
+
+        xdoc = getXML(username, page)
+        append!(tracks, collect(child_elements(collect(child_elements(root(xdoc)))[1])))
+        free(xdoc)
+        if has_attribute(tracks[1], "nowplaying")
+            popfirst!(tracks)
+        end
+
+        earliestTrackDate::DateTime = parseTrackXMLElement(tracks[end])[1]
+        if earliestTrackDate > startDateTime
+            page += 1
+        end
+    end
 end
