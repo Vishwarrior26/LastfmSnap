@@ -11,6 +11,7 @@ With data, parse dates
 Make some pretty graphs?
 Return DataFrame as CSV?
 =#
+const baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=1000&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
 
 """
     getXML(username::String, page::Integer)
@@ -20,7 +21,6 @@ Gets XML response from Lastfm API for given username. Gets 1000 tracks per page 
 Username should be well formatted, without leading or trailing whitespaces or anything of the kind.
 """
 function getXML(username::String, page::Integer)
-    baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=1000&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
     try
         # TODO rewrite as async?
         return parse_string(String(HTTP.get(baseUrl * username * "&page=" * string(page)).body))
@@ -86,6 +86,7 @@ function parseXMLPage(tracks, xdoc)
         popfirst!(pageTracks)
     end
     append!(tracks, pageTracks)
+    free(xdoc)
 end
 
 """
@@ -98,20 +99,27 @@ function getLastfmData(username::String)
     tracks = Vector{XMLElement}()
     sizehint!(tracks, totalTracks)
 
-    @sync for page = 1:totalPages
+    @sync Threads.@threads for page = 1:totalPages
         @async parseXMLPage(tracks, getXML(username, page))
     end
 
-    df = DataFrame(
-        date=[parseDate(track) for track in tracks],
-        track=[content(find_element(track, "name")) for track in tracks],
-        album=[content(find_element(track, "album")) for track in tracks],
-        artist=[content(find_element(track, "artist")) for track in tracks]
-    )
+    df = DataFrame(parseTrackXMLElement.(tracks))
+
     return sort!(df)
 end
 
-@profview getLastfmData("vishwarrior")
-# @time getLastfmData("vishwarrior")
-# using BenchmarkTools
-# @btime getLastfmData("vishwarrior", DateTime(2024, 02, 04), DateTime(2024, 02, 04))
+function parseTrackXMLElement(track)
+    dateTime = parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM")
+    trackTitle = content(find_element(track, "name"))
+    album = content(find_element(track, "album"))
+    artist = content(find_element(track, "artist"))
+    return (dateTime, trackTitle, album, artist)
+end
+
+getLastfmData("vishwarrior")
+
+using BenchmarkTools
+# @btime getLastfmData("vishwarrior") 
+# @btime getLastfmData("vishwarrior", DateTime(2023, 01, 01), DateTime(2024, 01, 01))
+@btime getLastfmData("xchickenskinx")
+@btime getLastfmData("xchickenskinx", DateTime(2023, 01, 01), DateTime(2024, 01, 01))
