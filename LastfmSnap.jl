@@ -1,42 +1,34 @@
-using DataFrames
-using Dates
-using HTTP
-using LightXML
+using DataFrames, Dates, HTTP, LightXML
 
 #=
 Get username
     If 200, good
     Else throw error
 Get date range # TODO See if better way to do this than current method
-Get number of items to process # TODO Unnecessary? May be faster to display truncated graph instead
 
 With data, parse dates
 
-Make some pretty graphs
+Make some pretty graphs?
 Return DataFrame as CSV?
 =#
-
 
 """
     getXML(username::String, page::Integer)
 
-Gets XML response from Lastfm API for given username. Gets 200 tracks per page for processing.
+Gets XML response from Lastfm API for given username. Gets 1000 tracks per page for processing.
 
 Username should be well formatted, without leading or trailing whitespaces or anything of the kind.
 """
 function getXML(username::String, page::Integer)
     baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=1000&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
     try
-        # TODO rewwrite async
-        r = HTTP.get(baseUrl * username * "&page=" * string(page))
-        xdoc = parse_string(String(r.body))
-        return xdoc
+        # TODO rewrite as async?
+        return parse_string(String(HTTP.get(baseUrl * username * "&page=" * string(page)).body))
     catch e
         println(e)
         println("Something's wrong; check your entered username or see if https://last.fm is down.")
     end
 end
-
 
 function parseDate(track::XMLElement)
     return parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM")
@@ -50,7 +42,7 @@ function parseXMLPage(tracks, xdoc, endDateTime)
     end
     pageStart = parseDate(pageTracks[end])
     if pageStart < endDateTime
-        println(pageStart)
+        # println(pageStart)
         append!(tracks, pageTracks)
     end
     return parseDate(pageTracks[end])
@@ -76,18 +68,50 @@ function getLastfmData(username::String, startDateTime::DateTime, endDateTime::D
             page += 1
         end
     end
-    # TODO rewrite this creation to be more efficient
+    # TODO rewrite this to be more efficient
     df = DataFrame(
         date=[parseDate(track) for track in tracks],
         track=[content(find_element(track, "name")) for track in tracks],
         album=[content(find_element(track, "album")) for track in tracks],
         artist=[content(find_element(track, "artist")) for track in tracks]
     )
-    # df = df[(df.date.>startDateTime).&(df.date.<endDateTime)]
-    println(page)
+    # println(page)
     return subset(df, :date => d -> startDateTime .<= d .<= endDateTime)
 end
 
-using Profile
-@profview println(getLastfmData("vishwarrior", DateTime(2024, 01, 01), DateTime(2024, 01, 31)))
-@profview println(getLastfmData("vishwarrior", DateTime(2024, 01, 01), DateTime(2024, 01, 31)))
+
+function parseXMLPage(tracks, xdoc)
+    pageTracks = collect(child_elements(collect(child_elements(root(xdoc)))[1]))
+    if has_attribute(pageTracks[1], "nowplaying")
+        popfirst!(pageTracks)
+    end
+    append!(tracks, pageTracks)
+end
+
+"""
+Get all available last.fm data for this user.
+"""
+function getLastfmData(username::String)
+    xdoc = getXML(username, 1)
+    totalPages = parse(Int64, attributes_dict(root(xdoc)["recenttracks"][1])["totalPages"])
+    totalTracks = parse(Int64, attributes_dict(root(xdoc)["recenttracks"][1])["total"])
+    tracks = Vector{XMLElement}()
+    sizehint!(tracks, totalTracks)
+
+    @sync for page = 1:totalPages
+        @async parseXMLPage(tracks, getXML(username, page))
+    end
+
+    df = DataFrame(
+        date=[parseDate(track) for track in tracks],
+        track=[content(find_element(track, "name")) for track in tracks],
+        album=[content(find_element(track, "album")) for track in tracks],
+        artist=[content(find_element(track, "artist")) for track in tracks]
+    )
+    return sort!(df)
+end
+
+@profview getLastfmData("vishwarrior")
+# @time getLastfmData("vishwarrior")
+# using BenchmarkTools
+# @btime getLastfmData("vishwarrior", DateTime(2024, 02, 04), DateTime(2024, 02, 04))
