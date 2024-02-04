@@ -25,8 +25,9 @@ Gets XML response from Lastfm API for given username. Gets 200 tracks per page f
 Username should be well formatted, without leading or trailing whitespaces or anything of the kind.
 """
 function getXML(username::String, page::Integer)
-    baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=200&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
+    baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=1000&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
     try
+        # TODO rewwrite async
         r = HTTP.get(baseUrl * username * "&page=" * string(page))
         xdoc = parse_string(String(r.body))
         return xdoc
@@ -36,19 +37,13 @@ function getXML(username::String, page::Integer)
     end
 end
 
-# TODO Delete?
-function parseTrackXMLElement(track)
-    dateTime = parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM")
-    trackTitle = content(find_element(track, "name"))
-    album = content(find_element(track, "album"))
-    artist = content(find_element(track, "artist"))
-end
 
 function parseDate(track::XMLElement)
     return parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM")
 end
 
 function parseXMLPage(tracks, xdoc, endDateTime)
+    # TODO make check for max pages
     pageTracks = collect(child_elements(collect(child_elements(root(xdoc)))[1]))
     if has_attribute(pageTracks[1], "nowplaying")
         popfirst!(pageTracks)
@@ -81,14 +76,18 @@ function getLastfmData(username::String, startDateTime::DateTime, endDateTime::D
             page += 1
         end
     end
+    # TODO rewrite this creation to be more efficient
     df = DataFrame(
-        date=[parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM") for track in tracks],
+        date=[parseDate(track) for track in tracks],
         track=[content(find_element(track, "name")) for track in tracks],
         album=[content(find_element(track, "album")) for track in tracks],
         artist=[content(find_element(track, "artist")) for track in tracks]
     )
     # df = df[(df.date.>startDateTime).&(df.date.<endDateTime)]
+    println(page)
     return subset(df, :date => d -> startDateTime .<= d .<= endDateTime)
 end
 
-getLastfmData("vishwarrior", DateTime(2023, 01, 01), DateTime(2023, 02, 01))
+using Profile
+@profview println(getLastfmData("vishwarrior", DateTime(2024, 01, 01), DateTime(2024, 01, 31)))
+@profview println(getLastfmData("vishwarrior", DateTime(2024, 01, 01), DateTime(2024, 01, 31)))
