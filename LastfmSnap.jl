@@ -27,7 +27,7 @@ Username should be well formatted, without leading or trailing whitespaces or an
 function getXML(username::String, page::Integer)
     baseUrl::String = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&format=xml&limit=200&api_key=959357ab2524c0d50de6e4ee8e792c68&user="
     try
-        r = HTTP.get(baseUrl * username * "&page=" * page)
+        r = HTTP.get(baseUrl * username * "&page=" * string(page))
         xdoc = parse_string(String(r.body))
         return xdoc
     catch e
@@ -42,49 +42,53 @@ function parseTrackXMLElement(track)
     trackTitle = content(find_element(track, "name"))
     album = content(find_element(track, "album"))
     artist = content(find_element(track, "artist"))
-    return fill(dateTime, trackTitle, album, artist)
 end
 
-# TODO Delete?
-function parseXMLPage(tracks)
-    init = 1
-    if has_attribute(tracks[1], "nowplaying")
-        init = 2
+function parseDate(track::XMLElement)
+    return parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM")
+end
+
+function parseXMLPage(tracks, xdoc, endDateTime)
+    pageTracks = collect(child_elements(collect(child_elements(root(xdoc)))[1]))
+    if has_attribute(pageTracks[1], "nowplaying")
+        popfirst!(pageTracks)
     end
-    return [parseTrackXMLElement(x) for x::XMLElement in tracks[init:end]]
+    pageStart = parseDate(pageTracks[end])
+    if pageStart < endDateTime
+        println(pageStart)
+        append!(tracks, pageTracks)
+    end
+    return parseDate(pageTracks[end])
 end
 
 """
     getLastfmData(username::String, startDateTime::DateTime, endDateTime::DateTime)
 
-Gets lastfm data for 'username' from startDateTime to endDateTime.
+Gets lastfm data for 'username' from startDateTime to endDateTime, inclusive on both ends.
 
 Assumes both values are in bounds (user has scrobbles in time frame)
 """
 function getLastfmData(username::String, startDateTime::DateTime, endDateTime::DateTime)
-    startDateTime < endDateTime ? nothing : startDateTime, endDateTime = endDateTime, startDateTime
+    # startDateTime < endDateTime ? nothing : startDateTime, endDateTime = endDateTime, startDateTime
     page = 1
-
+    tracks = Vector{XMLElement}()
     xdoc = getXML(username, page)
-    tracks::Vector{XMLElement} = collect(child_elements(collect(child_elements(root(xdoc)))[1]))
-    free(xdoc)
-    if has_attribute(tracks[1], "nowplaying")
-        popfirst!(tracks)
-    end
-
-    earliestTrackDate::DateTime = parseTrackXMLElement(tracks[end])[1]
+    earliestTrackDate::DateTime = parseXMLPage(tracks, xdoc, endDateTime)
     while earliestTrackDate > startDateTime
-
         xdoc = getXML(username, page)
-        append!(tracks, collect(child_elements(collect(child_elements(root(xdoc)))[1])))
-        free(xdoc)
-        if has_attribute(tracks[1], "nowplaying")
-            popfirst!(tracks)
-        end
-
-        earliestTrackDate::DateTime = parseTrackXMLElement(tracks[end])[1]
+        earliestTrackDate = parseXMLPage(tracks, xdoc, endDateTime)
         if earliestTrackDate > startDateTime
             page += 1
         end
     end
+    df = DataFrame(
+        date=[parse(DateTime, content(find_element(track, "date")), dateformat"dd u yyyy, HH:MM") for track in tracks],
+        track=[content(find_element(track, "name")) for track in tracks],
+        album=[content(find_element(track, "album")) for track in tracks],
+        artist=[content(find_element(track, "artist")) for track in tracks]
+    )
+    # df = df[(df.date.>startDateTime).&(df.date.<endDateTime)]
+    return subset(df, :date => d -> startDateTime .<= d .<= endDateTime)
 end
+
+getLastfmData("vishwarrior", DateTime(2023, 01, 01), DateTime(2023, 02, 01))
